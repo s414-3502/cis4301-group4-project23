@@ -34,26 +34,31 @@ function template() {
         <Grid xs={2}>
           <Item>
             <h3><b>QUERY 1</b></h3>
+            <h4>Seasonal L.A. Crime Throughout COVID-19 Seasons</h4>
           </Item>
         </Grid>
         <Grid xs={2}>
           <Item>
             <h3><b>QUERY 2</b></h3>
+            <h4>Transportation Crimes Ratio to Total Crime in L.A. Districts</h4>
           </Item>
         </Grid>
         <Grid xs={2}>
           <Item>
             <h3><b>QUERY 3</b></h3>
+            <h4>Victim Profiling Based on Demographic Factors</h4>
           </Item>
         </Grid>
         <Grid xs={2}>
           <Item>
             <h3><b>QUERY 4</b></h3>
+            <h4>The Connection Between Time, Premises, and Crime Type</h4>
           </Item>
         </Grid>
         <Grid xs={2}>
           <Item>
             <h3><b>QUERY 5</b></h3>
+            <h4>Likelihood of Crime being Reported within 30 days</h4>
           </Item>
         </Grid>
       </Grid>
