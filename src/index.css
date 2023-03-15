@@ -5,10 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: scroll;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  overflow-y: scroll;
 }
 
 code {
