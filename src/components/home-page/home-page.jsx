@@ -7,14 +7,12 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { Link } from "react-router-dom";
-import Button from '@mui/material/Button';
 import { ButtonBase } from '@mui/material';
 
 //light purple
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#D5D1ED',
   ...theme.typography.body2,
-  backgroundColor: "#D5D1ED",
   padding: theme.spacing(2),
   height: 160, 
   textAlign: 'center',
@@ -23,9 +21,8 @@ const Item = styled(Paper)(({ theme }) => ({
 
 //dark purple
 const Item2 = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#B1A7C6',
   ...theme.typography.body2,
-  backgroundColor: "#B1A7C6",
   height: 160, 
   padding: theme.spacing(2),
   textAlign: 'center',
@@ -37,7 +34,7 @@ const Item2 = styled(Paper)(({ theme }) => ({
 function template() {
   return (
     <div className="home-page">
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1,  height: 700}}>
       <Grid container spacing={2} alignItems="center" justifyContent="center">
         <Grid xs={10} >
           <Item>

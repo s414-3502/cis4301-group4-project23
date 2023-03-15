@@ -19,7 +19,6 @@ import Query4page from './components/queries/query4-page/query4-page';
 import Query5page from './components/queries/query5-page/query5-page';
 
 
-
 const App = () => {
   return (
     <div className="App">

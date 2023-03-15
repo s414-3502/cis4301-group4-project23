@@ -1,0 +1,12 @@
+.Toolbar{
+    position: static;
+    background-color: #ABA7C6;
+    height: 100vh;
+    color: #000000;
+}
+
+h6{
+    font-family: Verdana, sans-serif;
+    text-align: center;
+    padding-top: 1%;
+}
