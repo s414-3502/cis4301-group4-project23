@@ -1,8 +1,10 @@
 .Toolbar{
-    position: static;
     background-color: #ABA7C6;
-    height: 100vh;
     color: #000000;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;  
 }
 
 h6{
