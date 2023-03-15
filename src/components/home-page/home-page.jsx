@@ -9,10 +9,22 @@ import Grid from '@mui/material/Unstable_Grid2';
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
+  backgroundColor: "#D5D1ED",
   padding: theme.spacing(1),
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
+
+const Item2 = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  backgroundColor: "#B1A7C6",
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+
 
 function template() {
   return (
@@ -32,10 +44,10 @@ function template() {
       </Grid>
       <Grid container spacing={2} alignItems="center" justifyContent="center">
         <Grid xs={2}>
-          <Item>
+          <Item2>
             <h3><b>QUERY 1</b></h3>
             <h4>Seasonal L.A. Crime Throughout COVID-19 Seasons</h4>
-          </Item>
+          </Item2>
         </Grid>
         <Grid xs={2}>
           <Item>
@@ -44,10 +56,10 @@ function template() {
           </Item>
         </Grid>
         <Grid xs={2}>
-          <Item>
+          <Item2>
             <h3><b>QUERY 3</b></h3>
             <h4>Victim Profiling Based on Demographic Factors</h4>
-          </Item>
+          </Item2>
         </Grid>
         <Grid xs={2}>
           <Item>
@@ -56,10 +68,10 @@ function template() {
           </Item>
         </Grid>
         <Grid xs={2}>
-          <Item>
+          <Item2>
             <h3><b>QUERY 5</b></h3>
             <h4>Likelihood of Crime being Reported within 30 days</h4>
-          </Item>
+          </Item2>
         </Grid>
       </Grid>
       </Box>
