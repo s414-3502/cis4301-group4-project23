@@ -75,7 +75,7 @@ function Template() {
             <Box class="Descent">
               <FormControl>
                 <FormGroup>
-                  <Autocomplete
+                  <Autocomplete 
                     multiple
                     id="checkboxes-tags-demo"
                     options={descentOptions}

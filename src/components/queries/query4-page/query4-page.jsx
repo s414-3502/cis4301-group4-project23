@@ -28,7 +28,7 @@ function Template() {
             <h5>DATA FILTERS</h5>
             <i>select the premise of the crime, 3 crime groupings and a time range below</i>
             <Box class="Premises">
-              <FormControl>
+              <FormControl fullWidth>
                 <FormLabel class="label">
                   Premises
                 </FormLabel>
@@ -42,7 +42,7 @@ function Template() {
                 <i>crime location/premises</i>
               </FormControl>
             </Box>
-            <Box class="crimeGroupings">
+            <Box class="crimeGroupings2">
               <FormControl>
                 <FormLabel class="label">
                   Crime Groupings
@@ -69,7 +69,7 @@ function Template() {
               </FormControl>
             </Box>
             <Box class="Time">
-              <FormControl>
+              <FormControl fullWidth>
                 <FormLabel class="label">
                   Time Range
                 </FormLabel>

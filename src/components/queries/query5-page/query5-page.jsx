@@ -6,13 +6,9 @@ import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-
-import { Select, MenuItem } from '@mui/material';
 
 function Template() {
   return (
@@ -27,7 +23,7 @@ function Template() {
           <Box class="filters">
             <h5>DATA FILTERS</h5>
             <i>select up to 3 crime groupings below</i>
-            <Box class="crimeGroupings">
+            <Box class="crimeGroupings3">
               <FormControl>
                 <FormLabel class="label">
                   Crime Groupings
