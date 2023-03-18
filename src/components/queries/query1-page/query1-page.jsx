@@ -3,6 +3,9 @@ import * as React from "react";
 
 import Box from '@mui/material/Box';
 
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -34,21 +37,20 @@ function Template() {
                   <hr class="filter-hr"/>
                   <i>*See data page for Crime Groupings</i>
                 </FormLabel>
-                <RadioGroup
-                  defaultValue="Minor Crimes">
-                  <FormControlLabel class="options" value="Minor Crimes" control={<Radio size="small"/>} label="Minor Crimes" />
-                  <FormControlLabel class="options" value="Serious/Violent Crimes and Offenders" control={<Radio size="small"/>} label="Serious/Violent Crimes and Offenders" />
-                  <FormControlLabel class="options" value="Sexual Crimes" control={<Radio size="small"/>} label="Sexual Crimes" />
-                  <FormControlLabel class="options" value="Battery or Assault" control={<Radio size="small"/>} label="Battery or Assault" />
-                  <FormControlLabel class="options" value="Child Abuse" control={<Radio size="small"/>} label="Child Abuse" />
-                  <FormControlLabel class="options" value="Gun Crimes" control={<Radio size="small"/>} label="Gun Crimes" />
-                  <FormControlLabel class="options" value="Robbery/Theft Against Person" control={<Radio size="small"/>} label="Robbery/Theft Against Person" />
-                  <FormControlLabel class="options" value="Burglaries, Theft, and Property Crimes" control={<Radio size="small"/>} label="Burglaries, Theft, and Property Crimes" />
-                  <FormControlLabel class="options" value="Vehicle Related Crimes" control={<Radio size="small"/>} label="Vehicle Related Crimes" />
-                  <FormControlLabel class="options" value="Drugs" control={<Radio size="small"/>} label="Drugs" />
-                  <FormControlLabel class="options" value="Vulnerable Adult Crimes" control={<Radio size="small"/>} label="Vulnerable Adult Crimes" />
-                  <FormControlLabel class="options" value="White Collar Crimes" control={<Radio size="small"/>} label="White Collar Crimes" />
-                </RadioGroup>
+                <FormGroup>
+                  <FormControlLabel class="options" control={<Checkbox defaultChecked />} label="Minor Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Serious/Violent Crimes and Offenders" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Sexual Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Battery or Assault" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Child Abuse" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Gun Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Robbery/Theft Against Person" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Burglaries, Theft, and Property Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Vehicle Related Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Drugs" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="Vulnerable Adult Crimes" />
+                  <FormControlLabel class="options" control={<Checkbox />} label="White Collar Crimes" />
+                </FormGroup>
               </FormControl>
             </Box>
             <Box class="Seasons">
