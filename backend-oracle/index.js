@@ -16,7 +16,7 @@ async function TestConnection() {
         connectionString: "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = oracle.cise.ufl.edu)(PORT = 1521))(CONNECT_DATA=(SID=ORCL)))"
       }
     )
-    const data = await connection.execute('SELECT * FROM STUDENT')
+    const data = await connection.execute('input query without semicolon')
     console.log(data.rows)
   }
 
