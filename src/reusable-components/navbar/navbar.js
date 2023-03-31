@@ -90,32 +90,29 @@ function PersistentDrawerLeft() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: '#9E97CC',
           },
         }}
-        variant="persistent"
         anchor="left"
         open={open}
+        onClose={handleDrawerClose}
       >
-        <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-        <Divider />
         <List>
-           <ListItemButton href="/q1">
-              <ListItemText primary={'Query 1'} />
-            </ListItemButton>
-            <ListItemButton href="/q2">
-              <ListItemText primary={'Query 2'} />
-            </ListItemButton>
-            <ListItemButton href="/q3">
-              <ListItemText primary={'Query 3'} />
-            </ListItemButton>
-            <ListItemButton href="/q4">
-              <ListItemText primary={'Query 4'} />
-            </ListItemButton>
-            <ListItemButton href="/q5">
-              <ListItemText primary={'Query 5'} />
-            </ListItemButton>
+            <ListItemButton href="/q1">
+                <ListItemText primary={'Query 1'} />
+              </ListItemButton>
+              <ListItemButton href="/q2">
+                <ListItemText primary={'Query 2'} />
+              </ListItemButton>
+              <ListItemButton href="/q3">
+                <ListItemText primary={'Query 3'} />
+              </ListItemButton>
+              <ListItemButton href="/q4">
+                <ListItemText primary={'Query 4'} />
+              </ListItemButton>
+              <ListItemButton href="/q5">
+                <ListItemText primary={'Query 5'} />
+              </ListItemButton>
         </List>
       </Drawer>
     </Box>
