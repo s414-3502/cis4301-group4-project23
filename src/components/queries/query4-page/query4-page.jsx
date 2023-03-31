@@ -1,21 +1,11 @@
 import "./query4-page.css";
 import React from "react";
+import { Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider} from '@mui/material';
 
-import Box from '@mui/material/Box';
-
-import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
-
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-
-import { Select, MenuItem } from '@mui/material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-
 function Template() {
   return (
-    <div className="query-1-page">
+    <div className="query-4-page">
       <Box sx={{ flexGrow: 1,  height: 700}}>
         <h1>The Connection Between Time, Premises, and Crime Type</h1>
         <hr class="section-divider"/>
@@ -23,17 +13,23 @@ function Template() {
           Provides users with various crime trends associated with different times 
           in the day at different places. 
         </p>
-        <Box class="dataVisualization">
-          <Box class="filters">
+        <Box 
+        sx={{display: 'flex', m:8, mt:0, height:'65%'}}
+        >
+          <Box sx={{width: '80%', borderTop: 1, borderBottom: 1, borderColor: 'gray'}}>
+
+          </Box>
+          <Box sx={{display: 'flex', flexDirection:'column'}}>
             <h5>DATA FILTERS</h5>
-            <i>select the premise of the crime, 3 crime groupings and a time range below</i>
-            <Box class="Premises">
+            <p class="hint">select the premise of the crime, 3 crime groupings <br></br> and a time range below</p>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'60%'}}>
               <FormControl fullWidth>
-                <FormLabel class="label">
-                  Premises
-                </FormLabel>
-                <hr class="filter-hr"/>
-                <Select value={1}>
+                <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Premise</FormLabel>
+                </Divider>
+                <Select value={1} 
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}
+                  >
                   <MenuItem value={1}>Premise-Group1</MenuItem>
                   <MenuItem value={2}>Premise-Group2</MenuItem>
                   <MenuItem value={3}>Premise-Group3</MenuItem>
@@ -42,16 +38,12 @@ function Template() {
                 <i>crime location/premises</i>
               </FormControl>
             </Box>
-            <Box class="crimeGroupings2">
-              <FormControl>
-                <FormLabel class="label">
-                  Crime Groupings
-                  <br />
-                  <i>*select up to 3</i>
-                  <br />
-                  <hr class="filter-hr"/>
-                  <i>*See data page for Crime Groupings</i>
-                </FormLabel>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'60%', maxHeight:'40%', overflowY:"scroll",}}>
+              <FormControl fullWidth>
+                <Divider sx={{mb: 0, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Crime Groupings</FormLabel>
+                </Divider>
+                <i class="hint">*select up to 3</i>
                 <FormGroup>
                   <FormControlLabel class="options" control={<Checkbox defaultChecked />} label="Minor Crimes" />
                   <FormControlLabel class="options" control={<Checkbox />} label="Serious/Violent Crimes and Offenders" />
@@ -66,15 +58,17 @@ function Template() {
                   <FormControlLabel class="options" control={<Checkbox />} label="Vulnerable Adult Crimes" />
                   <FormControlLabel class="options" control={<Checkbox />} label="White Collar Crimes" />
                 </FormGroup>
+                <i class="hint">*See data page for Crime Groupings</i>
               </FormControl>
             </Box>
-            <Box class="Time">
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'60%'}}>
               <FormControl fullWidth>
-                <FormLabel class="label">
-                  Time Range
-                </FormLabel>
-                <hr class="filter-hr"/>
-                <Select value={1}>
+              <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Time Range</FormLabel>
+                </Divider>
+                <Select value={1}
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}
+                >
                   <MenuItem value={1}>6AM <ArrowRightAltIcon vertical-align="middle"/> 12PM</MenuItem>
                   <MenuItem value={2}>12:01PM <ArrowRightAltIcon vertical-align="middle"/> 6PM</MenuItem>
                   <MenuItem value={3}>6:01PM <ArrowRightAltIcon vertical-align="middle"/> 12AM</MenuItem>
@@ -83,11 +77,11 @@ function Template() {
                 <i>all time ranges are 6 hours long</i>
               </FormControl>
             </Box>
-          </Box> 
+          </Box>
         </Box>
         <hr class="section-divider"/>
         <h2>DATA ANALYSIS</h2>
-        <Box class="interpretation"> 
+        <Box sx={{backgroundColor: "#D5D1ED", mx:15, p:2, pt:0.1, borderRadius:3}}> 
           <h3>Data Analysis and Interpretation</h3>
           <p class="normal">Here is where a summary of the analysis of the data and the results will go. 
             Of course, this section can only be completed after we have made the actual 
