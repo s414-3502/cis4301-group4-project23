@@ -10,7 +10,7 @@ class Navbar extends React.Component {
 export default Navbar;*/
 import "./navbar.css";
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -25,9 +25,7 @@ import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+const AppBar = styled(MuiAppBar, {shouldForwardProp: (prop) => prop !== 'open',})(({ theme, open }) => ({
   backgroundColor: "#aba7c6",
   color: "black",
   transition: theme.transitions.create(['margin', 'width'], {
@@ -47,7 +45,6 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function PersistentDrawerLeft() {
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {

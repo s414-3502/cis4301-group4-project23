@@ -1,5 +1,6 @@
 import "./query4-page.css";
 import React from "react";
+import Plot from 'react-plotly.js';
 import { Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider, Typography} from '@mui/material';
 
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
@@ -28,7 +29,19 @@ function Template() {
         sx={{display: 'flex', m:8, mt:0, height:'65%'}}
         >
           <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3,}}>
-
+          <Plot
+            data={[
+              {
+                x: [1, 2, 3],
+                y: [2, 6, 3],
+                type: 'scatter',
+                mode: 'lines+markers',
+                marker: {color: 'red'},
+              },
+              {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+            ]}
+            layout={ {width: 320, height: 240, title: 'A Fancy Plot'} }
+          />
           </Box>
           <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
             <h5>DATA FILTERS</h5>
