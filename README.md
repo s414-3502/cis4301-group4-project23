@@ -21,7 +21,6 @@
 
 7. from root of project run "npm run backend" - output should print all tuples from the SQL input query along with Hello World console log
 
-
 ## Available Scripts
 
 In the project directory, you can run:
