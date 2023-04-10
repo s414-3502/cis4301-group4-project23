@@ -1,80 +1,118 @@
 import "./query4-page.css";
 import React from "react";
+import Plot from 'react-plotly.js';
+import { Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider, Typography} from '@mui/material';
 
-import Box from '@mui/material/Box';
-
-import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
-
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-
-import { Select, MenuItem } from '@mui/material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-
 function Template() {
+  const [premises, setPremises] = React.useState('');
+  const [time, setTime] = React.useState('');
+
+  const changePremises = (event) => {
+    setPremises(event.target.value);
+  };
+  const changeTime = (event) => {
+    setTime(event.target.value);
+  };
   return (
-    <div className="query-1-page">
+    <div className="query-4-page">
       <Box sx={{ flexGrow: 1,  height: 700}}>
         <h1>The Connection Between Time, Premises, and Crime Type</h1>
-        <hr class="section-divider"/>
-        <p class="subheading">
-          Provides users with various crime trends associated with different times 
-          in the day at different places. 
-        </p>
-        <Box class="dataVisualization">
-          <Box class="filters">
+        <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+          <Typography sx={{color:"#484273", fontSize: 13,}}>
+            Provides users with various crime trends associated with different times 
+            in the day at different places. 
+          </Typography>
+        </Divider>
+        
+        <Box 
+        sx={{display: 'flex', m:8, mt:0, height:'65%'}}
+        >
+          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3,}}>
+          <Plot
+            data={[
+              {
+                x: [1, 2, 3],
+                y: [2, 6, 3],
+                type: 'scatter',
+                mode: 'lines+markers',
+                marker: {color: 'red'},
+              },
+              {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+            ]}
+            layout={ {width: 320, height: 240, title: 'A Fancy Plot'} }
+          />
+          </Box>
+          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
             <h5>DATA FILTERS</h5>
-            <i>select the premise of the crime, 3 crime groupings and a time range below</i>
-            <Box class="Premises">
+            <p class="hint">select the premise of the crime, 3 crime groupings <br></br> and a time range below</p>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
               <FormControl fullWidth>
-                <FormLabel class="label">
-                  Premises
-                </FormLabel>
-                <hr class="filter-hr"/>
-                <Select value={1}>
-                  <MenuItem value={1}>Premise-Group1</MenuItem>
-                  <MenuItem value={2}>Premise-Group2</MenuItem>
-                  <MenuItem value={3}>Premise-Group3</MenuItem>
-                  <MenuItem value={4}>Premise-Group4</MenuItem>
+                <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Premise</FormLabel>
+                </Divider>
+                <Select 
+                  value={premises}
+                  label="Premises"
+                  onChange={changePremises}
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}
+                  >
+                  <MenuItem value={1}>STREET</MenuItem>
+                  <MenuItem value={2}>SINGLE FAMILY DWELLING</MenuItem>
+                  <MenuItem value={3}>MULTI-UNIT DWELLING</MenuItem>
+                  <MenuItem value={4}>PARKING LOT</MenuItem>
+                  <MenuItem value={5}>OTHER BUSINESS</MenuItem>
+                  <MenuItem value={6}>SIDEWALK</MenuItem>
+                  <MenuItem value={7}>VEHICLE, PASSENGER/TRUCK</MenuItem>
+                  <MenuItem value={8}>DRIVEWAY</MenuItem>
+                  <MenuItem value={9}>GARAGE/CARPORT</MenuItem>
+                  <MenuItem value={10}>RESTAURANT/FAST FOOD</MenuItem>
+                  <MenuItem value={11}>DEPARTMENT STORE</MenuItem>
+                  <MenuItem value={12}>MARKET</MenuItem>
+                  <MenuItem value={13}>OTHER STORE</MenuItem>
+                  <MenuItem value={14}>PARKING UNDERGROUND/BUILDING</MenuItem>
+                  <MenuItem value={15}>YARD</MenuItem>
+                  <MenuItem value={16}>ALLEY</MenuItem>
+                  <MenuItem value={17}>PARK/PLAYGROUND</MenuItem>
+                  <MenuItem value={18}>OTHER</MenuItem>
                 </Select>
                 <i>crime location/premises</i>
               </FormControl>
             </Box>
-            <Box class="crimeGroupings2">
-              <FormControl>
-                <FormLabel class="label">
-                  Crime Groupings
-                  <br />
-                  <i>*select up to 3</i>
-                  <br />
-                  <hr class="filter-hr"/>
-                  <i>*See data page for Crime Groupings</i>
-                </FormLabel>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%', maxHeight:'40%', overflowY:"scroll",}}>
+              <FormControl fullWidth>
+                <Divider sx={{mb: 0, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Crime Groupings</FormLabel>
+                </Divider>
+                <i class="hint">*select up to 3</i>
                 <FormGroup>
-                  <FormControlLabel class="options" control={<Checkbox defaultChecked />} label="Minor Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Serious/Violent Crimes and Offenders" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Sexual Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Battery or Assault" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Child Abuse" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Gun Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Robbery/Theft Against Person" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Burglaries, Theft, and Property Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Vehicle Related Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Drugs" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="Vulnerable Adult Crimes" />
-                  <FormControlLabel class="options" control={<Checkbox />} label="White Collar Crimes" />
+                  <FormControlLabel control={<Checkbox defaultChecked />} label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
                 </FormGroup>
+                <i class="hint">*See data page for Crime Groupings</i>
               </FormControl>
             </Box>
-            <Box class="Time">
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
               <FormControl fullWidth>
-                <FormLabel class="label">
-                  Time Range
-                </FormLabel>
-                <hr class="filter-hr"/>
-                <Select value={1}>
+              <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Time Range</FormLabel>
+                </Divider>
+                <Select
+                  value={time}
+                  label="Time Range"
+                  onChange={changeTime}
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}
+                >
                   <MenuItem value={1}>6AM <ArrowRightAltIcon vertical-align="middle"/> 12PM</MenuItem>
                   <MenuItem value={2}>12:01PM <ArrowRightAltIcon vertical-align="middle"/> 6PM</MenuItem>
                   <MenuItem value={3}>6:01PM <ArrowRightAltIcon vertical-align="middle"/> 12AM</MenuItem>
@@ -83,11 +121,11 @@ function Template() {
                 <i>all time ranges are 6 hours long</i>
               </FormControl>
             </Box>
-          </Box> 
+          </Box>
         </Box>
         <hr class="section-divider"/>
         <h2>DATA ANALYSIS</h2>
-        <Box class="interpretation"> 
+        <Box sx={{backgroundColor: "#D5D1ED", mx:15, p:2, pt:0.1, borderRadius:3}}> 
           <h3>Data Analysis and Interpretation</h3>
           <p class="normal">Here is where a summary of the analysis of the data and the results will go. 
             Of course, this section can only be completed after we have made the actual 
