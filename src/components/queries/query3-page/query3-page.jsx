@@ -1,22 +1,12 @@
 import "./query3-page.css";
 import React from "react";
+import Plot from 'react-plotly.js';
 
-import Box from '@mui/material/Box';
+import { Box, FormControl, FormLabel, Select, MenuItem, FormGroup, Slider,
+         Checkbox, TextField, Autocomplete, Divider, Typography} from '@mui/material';
 
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import { Select, MenuItem } from '@mui/material';
-import FormGroup from '@mui/material/FormGroup';
-
-import Slider from '@mui/material/Slider';
-
-import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
-import InputLabel from '@mui/material/InputLabel';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
 const minDistance = 20;
 
@@ -25,6 +15,8 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 function Template() {
   const [value1, setValue1] = React.useState([20, 50]);
+  const [sex, setSex] = React.useState('');
+
 
   const handleChange1 = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
@@ -38,42 +30,61 @@ function Template() {
     }
   };
 
-  const [sex, setSex] = React.useState('');
 
-  const handleChange = (event) => {
+  const changeSex = (event) => {
     setSex(event.target.value);
   };
 
   return (
-    <div className="query-1-page">
-      <Box sx={{ flexGrow: 1,  height: 700}}>
+    <div className="query-3-page">
+      <Box sx={{ flexGrow: 1,  height: 1000}}>
         <h1>Victim Profiling Based on Demographic Factors</h1>
-        <hr class="section-divider"/>
-        <p class="subheading">
-        Common crimes committed  in L.A. based on age, sex and descent.
-        </p>
-        <Box class="dataVisualization">
-          <Box class="filters">
+        <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+          <Typography sx={{color:"#484273", fontSize: 13,}}>
+            Common crimes committed  in L.A. based on age, sex and descent.
+          </Typography>
+        </Divider>
+        <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
+          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
+            <Plot
+              data={[
+                {
+                  x: ["2013-10-04 22:23:00", "2013-11-04 22:23:00", "2013-12-04 22:23:00"],
+                  y: [1, 3, 6],
+                  type: 'scatter',
+                  mode: 'lines+markers',
+                  marker: {color: 'purple'},
+                },
+              ]
+              }
+              layout={ {width: 1200, height: 600} }
+            />
+          </Box>
+          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
             <h5>DATA FILTERS</h5>
-            <i>select sex, one or more racial descents, and an age range</i>
-            <Box class="Sex">
+            <p class="hint">select sex, one or more racial descents, and an age range</p>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Sex</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={sex}
-                  label="sex"
-                  onChange={handleChange}
-                >
+                <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>
+                    Sex
+                  </FormLabel>
+                </Divider>                
+                <Select value={sex} label="sex" onChange={changeSex}                   
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}>
                   <MenuItem value={1}>Male</MenuItem>
                   <MenuItem value={2}>Female</MenuItem>
                   <MenuItem value={3}>Other</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-            <Box class="Descent">
-              <FormControl>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
+              <FormControl fullWidth>
+                <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>
+                    Descent
+                  </FormLabel>
+                </Divider>
                 <FormGroup>
                   <Autocomplete 
                     multiple
@@ -98,16 +109,16 @@ function Template() {
                     )}
                   />
                 </FormGroup>
-                <br />
-                <i>One or more racial identities</i>
+=                <i>One or more racial identities</i>
               </FormControl>
             </Box>
-            <Box class="Age">
-              <FormControl>
-                <FormLabel class="label">
-                  Age Range
-                </FormLabel>
-                <hr class="filter-hr"/>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
+              <FormControl fullWidth>
+                <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                  <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>
+                    Age Range
+                  </FormLabel>
+                </Divider>
                 <FormGroup>
                   <Slider
                     size="small"
@@ -124,26 +135,7 @@ function Template() {
             </Box>
           </Box> 
         </Box>
-        <hr class="section-divider"/>
-        <h2>DATA ANALYSIS</h2>
-        <Box class="interpretation"> 
-          <h3>Data Analysis and Interpretation</h3>
-          <p class="normal">Here is where a summary of the analysis of the data and the results will go. 
-            Of course, this section can only be completed after we have made the actual 
-            trend analysis for the web application. Only after deriving the results can 
-            we make an educated analysis of the data and the connections within it.
-          </p>
-          <p class="normal">
-          Here is where a summary of the analysis of the data and the results will go. 
-          Of course, this section can only be completed after we have made the actual trend 
-          analysis for the web application. Only after deriving the results can we make an 
-          educated analysis of the data and the connections within it.
-          </p>
-        </Box>
-        <Box>
-        </Box>
       </Box>
-
     </div>
   );
 };

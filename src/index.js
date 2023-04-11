@@ -14,5 +14,3 @@ root.render(
     <CopyrightFooter />
   </React.StrictMode>
 );
-
-

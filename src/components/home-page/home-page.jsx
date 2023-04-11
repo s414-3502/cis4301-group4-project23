@@ -29,6 +29,16 @@ const Item2 = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary
 }));
 
+//tuple button
+const Item3 = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'light' ? '#C5C6D0' : '#7F7D9C',
+  ...theme.typography.body2,
+  height: 60, 
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  color: theme.palette.text.secondary
+}));
+
 
 
 function template() {
@@ -89,6 +99,13 @@ function template() {
           </ButtonBase>
         </Grid>
       </Grid>
+      <br />
+      <br />
+      <ButtonBase>
+        <Item3>
+            <h2>Click to Calculate Number of Tuples in Dataset</h2>
+        </Item3>
+      </ButtonBase>
       </Box>
     </div>
   );

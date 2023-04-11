@@ -1,6 +1,25 @@
-# Getting Started with Create React App
+# UF Node Connection with React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. install respective Basic package from "https://www.oracle.com/database/technologies/instant-client/downloads.html"
+
+2. extract file and copy path to put into environment variables 
+    Environment variables > System Variables > path > edit > New (paste path here)
+    click OK to save your changes
+
+3. Connect to UFL VPN
+
+4. Save your oracle username and password in an .env file and add to .gitignore - 
+    https://medium.com/@philipkrause7/using-environment-variables-in-react-js-to-keep-your-keys-safe-b0609b2cbc07
+
+    in env. file add:
+    REACT_APP_USERNAME = "username"
+    REACT_APP_PW = "generated password"
+
+5. install npm packages by npm install command
+
+6. save file 
+
+7. from root of project run "npm run backend" - output should print all tuples from the SQL input query along with Hello World console log
 
 ## Available Scripts
 
