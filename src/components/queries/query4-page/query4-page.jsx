@@ -97,7 +97,7 @@ function Template() {
                   <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
                   <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
                 </FormGroup>
-                <i class="hint">*See data page for Crime Groupings</i>
+                <i>*See data page for Crime Groupings</i>
               </FormControl>
             </Box>
             <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
