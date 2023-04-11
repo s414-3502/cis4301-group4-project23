@@ -10,27 +10,22 @@ class Navbar extends React.Component {
 export default Navbar;*/
 import "./navbar.css";
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+const AppBar = styled(MuiAppBar, {shouldForwardProp: (prop) => prop !== 'open',})(({ theme, open }) => ({
   backgroundColor: "#aba7c6",
   color: "black",
   transition: theme.transitions.create(['margin', 'width'], {
@@ -50,7 +45,6 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function PersistentDrawerLeft() {
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -90,32 +84,29 @@ function PersistentDrawerLeft() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: '#9E97CC',
           },
         }}
-        variant="persistent"
         anchor="left"
         open={open}
+        onClose={handleDrawerClose}
       >
-        <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-        <Divider />
         <List>
-           <ListItemButton href="/q1">
-              <ListItemText primary={'Query 1'} />
-            </ListItemButton>
-            <ListItemButton href="/q2">
-              <ListItemText primary={'Query 2'} />
-            </ListItemButton>
-            <ListItemButton href="/q3">
-              <ListItemText primary={'Query 3'} />
-            </ListItemButton>
-            <ListItemButton href="/q4">
-              <ListItemText primary={'Query 4'} />
-            </ListItemButton>
-            <ListItemButton href="/q5">
-              <ListItemText primary={'Query 5'} />
-            </ListItemButton>
+            <ListItemButton href="/q1">
+                <ListItemText primary={'Query 1'} />
+              </ListItemButton>
+              <ListItemButton href="/q2">
+                <ListItemText primary={'Query 2'} />
+              </ListItemButton>
+              <ListItemButton href="/q3">
+                <ListItemText primary={'Query 3'} />
+              </ListItemButton>
+              <ListItemButton href="/q4">
+                <ListItemText primary={'Query 4'} />
+              </ListItemButton>
+              <ListItemButton href="/q5">
+                <ListItemText primary={'Query 5'} />
+              </ListItemButton>
         </List>
       </Drawer>
     </Box>
