@@ -25,10 +25,8 @@ function Template() {
           </Typography>
         </Divider>
         
-        <Box 
-        sx={{display: 'flex', m:8, mt:0, height:'65%'}}
-        >
-          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3,}}>
+        <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
+          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
           <Plot
               data={[
                 {
