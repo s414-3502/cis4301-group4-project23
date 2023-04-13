@@ -1,0 +1,28 @@
+.section-divider {
+    margin: 2%;
+    margin-left: 5%;
+    border: 1px solid #b0acac;
+    width: 90%;
+    text-align: center;
+}
+
+.about-box{
+    border-radius: 10px;
+    background-color: #D5D1ED;
+    margin: 40px;
+    padding: 15px;
+    padding-top: 1px;
+    text-align: left;
+}
+
+.about-title{
+    font-style: italic;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+ul{
+    text-align: left;
+    margin: 0;
+    margin-left: -20px;
+}
