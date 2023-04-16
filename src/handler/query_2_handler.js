@@ -1,7 +1,7 @@
-var queryHandler = require("./query_handler.js");
+import { QueryHandler } from "./query_handler";
 
-export const prepareOutputQ2 = async(query) => {
-    const output = await queryHandler(query)
+export const prepareOutputQ2 = async (query) => {
+    const output = await QueryHandler(query)
     let X = [];
     let Y = [];
 
@@ -10,10 +10,7 @@ export const prepareOutputQ2 = async(query) => {
         Y.push(rows[i + 1]);
         X.push(rows[i + 2]);
     }
-    // queryHandler(query).then((output) => {
-        return [X,Y];
-    // })
-    // console.log(output)
+    return [X,Y];
 }
 
 

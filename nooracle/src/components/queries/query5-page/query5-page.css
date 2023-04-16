@@ -1,0 +1,79 @@
+.normal {
+    text-align: left;
+}
+
+.section-divider {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-right: 40px;
+    border: 1px solid #b0acac;
+    width: 90%;
+}
+
+body {
+    padding-bottom: 35%;
+}
+
+h2 {
+    color: #484273;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h5 {
+    color: #484273;
+    font-size: 25px;
+    font-weight: 400;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-bottom: 0;
+}
+
+h1 {
+    color: #484273;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    margin-bottom: -20px;
+
+}
+
+h4 {
+    color: #484273;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.label{
+    font-size: medium;
+    text-align: center;
+}
+
+.hint{
+    font-size: small;
+    margin-top: 0;
+}
+
+h3{
+    text-align: left;
+}
+
+i{
+    font-size: x-small;
+}

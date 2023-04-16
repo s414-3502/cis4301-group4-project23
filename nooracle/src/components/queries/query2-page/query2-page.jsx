@@ -1,7 +1,7 @@
 import "./query2-page.css";
 import React from "react";
 import Plot from 'react-plotly.js';
-import { prepareOutputQ2 } from "../../../handler/query_2_handler";
+import { prepareOutputQ2 } from "../../../utils/query_2_handler";
 
 import { Box, FormControlLabel, FormControl, FormLabel,
           Select, MenuItem, FormGroup, Checkbox, Divider, 
