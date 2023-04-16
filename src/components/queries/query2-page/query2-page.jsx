@@ -1,6 +1,7 @@
 import "./query2-page.css";
 import React from "react";
 import Plot from 'react-plotly.js';
+// import prepareOutputQ2 from './../../../utils/query_2_handler.js';
 
 import { Box, FormControlLabel, FormControl, FormLabel,
           Select, MenuItem, FormGroup, Checkbox, Divider, 
@@ -8,6 +9,9 @@ import { Box, FormControlLabel, FormControl, FormLabel,
 
 function Template() {
   const [district, setDistrict] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [x, setX] = React.useState([])
+  const [y, setY] = React.useState([])
 
   const changeDistrict = (event) => {
     setDistrict(event.target.value);
@@ -16,7 +20,8 @@ function Template() {
   return (
     <div className="query-2-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
-        <h1>Transportation Crimes Ratio to Total Crime in L.A. Districts</h1>
+        <h1>
+          {loading ? "loading..." : "Transportation Crimes Ratio to Total Crime in L.A. Districts"}</h1>
         <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
           <Typography sx={{color:"#484273", fontSize: 13,}}>
           Transportation crimes and their ratio in relation to all crimes in specific LA districts.
@@ -28,8 +33,10 @@ function Template() {
             <Plot
               data={[
                 {
-                  x: ["2013-10-04 22:23:00", "2013-11-04 22:23:00", "2013-12-04 22:23:00"],
-                  y: [1, 3, 6],
+                  x: x
+                  ,
+                  y: y
+                 ,
                   type: 'scatter',
                   mode: 'lines+markers',
                   marker: {color: 'purple'},
