@@ -8,6 +8,8 @@ var app = express();
 // }
 
 const oracledb = require("oracledb");
+require('dotenv').config({ path: '.env' })
+
 const username = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PW;
 
@@ -34,6 +36,7 @@ async function fetchDataFromQuery(query) {
 var q = `--Query 2
 WITH VEHICLE_CRIMES AS
     (SELECT DISTINCT l.CRM_CD_DESC
+        
     FROM WGREGORY.LA_CRIMES l
     WHERE 
 --    l.CRM_CD_DESC = 'DRIVING WITHOUT OWNER CONSENT (DWOC)'
