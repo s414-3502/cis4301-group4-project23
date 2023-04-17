@@ -1,38 +1,75 @@
 import "./query2-page.css";
 import React from "react";
+import Plot from 'react-plotly.js';
+import { prepareOutputQ2 } from "../../../handler/query_2_handler";
 
-import Box from '@mui/material/Box';
+import { Box, FormControlLabel, FormControl, FormLabel,
+          Select, MenuItem, FormGroup, Checkbox, Divider, 
+          Typography, 
+          Button }from '@mui/material';
 
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+function Template() {
+  const [district, setDistrict] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [x, setX] = React.useState([]);
+  const [y, setY] = React.useState([]);
+  console.log("wow this is running");
 
-import { Select, MenuItem } from '@mui/material';
+  const loadGraph = () => {
+    setLoading(true);
+    setX([]);
+    setY([]);
+    setTimeout(() => {
+      prepareOutputQ2("").then(([X, Y]) => {
+        setLoading(false);
+        setX(X);
+        setY(Y);
+      })  
+    }, 2500);
+  }
+  
+  const changeDistrict = (event) => {
+    setDistrict(event.target.value);
+  }
 
-import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
-
-function template() {
   return (
-    <div className="query-1-page">
-      <Box sx={{ flexGrow: 1,  height: 700}}>
-        <h1>Transportation Crimes Ratio to Total Crime in L.A. Districts</h1>
-        <hr class="section-divider"/>
-        <p class="subheading">
-        Transportation crimes and their ratio in relation to all crimes in specific LA districts.
-        See how safe a specific area might be for different modes of transportation
-        </p>
-        <Box class="dataVisualization">
-          <Box class="filters">
+    <div className="query-2-page">
+      <Box sx={{ flexGrow: 1,  height: 1000}}>
+        <h1>
+          {loading ? "loading..." : "Transportation Crimes Ratio to Total Crime in L.A. Districts"}</h1>
+        <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+          <Typography sx={{color:"#484273", fontSize: 13,}}>
+          Transportation crimes and their ratio in relation to all crimes in specific LA districts.
+          See how safe a specific area might be for different modes of transportation
+          </Typography>
+        </Divider>
+        <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
+          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
+            <Plot
+              data={[
+                {
+                  x: x,
+                  y: y,
+                  type: 'scatter',
+                  mode: 'lines+markers',
+                  marker: {color: 'purple'},
+                },
+              ]}
+              layout={ {width: 1200, height: 600} }
+              />
+          </Box>
+          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
             <h5>DATA FILTERS</h5>
-            <i>select a district and a vehicle crime type</i>
-            <Box class="Districts">
-              <FormControl>
-                <FormLabel class="label">
-                  Districts*
-                </FormLabel>
-                <hr class="filter-hr"/>
-                <Select value={1}>
+            <p class="hint">select a district and a vehicle crime type</p>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
+              <FormControl fullWidth>
+                  <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                    <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>
+                      Districts*
+                    </FormLabel>
+                  </Divider>
+                <Select value={district} label="district" onChange={changeDistrict}                   
+                  sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}>
                   <MenuItem value={1}>District 1</MenuItem>
                   <MenuItem value={2}>District 2</MenuItem>
                   <MenuItem value={3}>District 3</MenuItem>
@@ -40,57 +77,37 @@ function template() {
                   <MenuItem value={5}>District 5</MenuItem>
                 </Select>
                 <i>L.A. Districts</i>
-                <br />
                 <i>*See Data Page for District Areas</i>
               </FormControl>
             </Box>
-            <Box class="Vehicle">
-              <FormControl>
-                <FormLabel class="label">
-                  Vehicle Crime Types*
-                </FormLabel>
-                <i>select up to 5</i>
-                <hr class="filter-hr"/>
+            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%', maxHeight:'40%', overflowY:"scroll",}}>
+              <FormControl fullWidth>
+                  <Divider sx={{mb: 0, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                    <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Vehicle Crime Types*</FormLabel>
+                  </Divider>
+                  <i class="hint">select up to 5</i>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label="Stolen Vehicle**" />
-                  <FormControlLabel control={<Checkbox />} label="Reckless Driving" />
-                  <FormControlLabel control={<Checkbox />} label="Grand Theft" />
-                  <FormControlLabel control={<Checkbox />} label="Petty Theft" />
-                  <FormControlLabel control={<Checkbox />} label="Attempted Theft" />
-                  <FormControlLabel control={<Checkbox />} label="Train Wrecking" />
-                  <FormControlLabel control={<Checkbox />} label="Vandalized Vehicle" />
+                  <Checkbox control={<Checkbox defaultChecked />} label={<Typography sx={{ fontSize: 14, }}>Stolen Vehicle**</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Reckless Driving</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Grand Theft</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Petty Theft</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Attempted Theft</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Train Wrecking</Typography>} />
+                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Vandalized Vehicle</Typography>} />
                 </FormGroup>
-                <br />
                 <i>*See Data Page for Crime Types</i>
                 <i>**includes (but not limited to: motor vehicles, motorized scooters, bicycles, wheelchairs, etc.)</i>
-
-
+                <Button variant="contained" onClick={() => {
+                  console.log("hello")
+                  loadGraph();
+                }}>Save</Button>
               </FormControl>
             </Box>
           </Box> 
         </Box>
-        <hr class="section-divider"/>
-        <h2>DATA ANALYSIS</h2>
-        <Box class="interpretation"> 
-          <h3>Data Analysis and Interpretation</h3>
-          <p class="normal">Here is where a summary of the analysis of the data and the results will go. 
-            Of course, this section can only be completed after we have made the actual 
-            trend analysis for the web application. Only after deriving the results can 
-            we make an educated analysis of the data and the connections within it.
-          </p>
-          <p class="normal">
-          Here is where a summary of the analysis of the data and the results will go. 
-          Of course, this section can only be completed after we have made the actual trend 
-          analysis for the web application. Only after deriving the results can we make an 
-          educated analysis of the data and the connections within it.
-          </p>
-        </Box>
-        <Box>
-        </Box>
       </Box>
-
     </div>
   );
 };
 
-export default template;
+export default Template;
