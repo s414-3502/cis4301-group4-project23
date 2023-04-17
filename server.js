@@ -8,13 +8,16 @@ var app = express();
 // }
 
 const oracledb = require("oracledb");
+const username = process.env.REACT_APP_USERNAME;
+const password = process.env.REACT_APP_PW;
+
 async function fetchDataFromQuery(query) {
     console.log("fetching connection")
   try {
     let connection = await oracledb.getConnection(
       {
-        user: "ananya.agrawal",
-        password: "",
+        user: username,
+        password: password,
         connectionString: "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = oracle.cise.ufl.edu)(PORT = 1521))(CONNECT_DATA=(SID=ORCL)))"
       }
     )
