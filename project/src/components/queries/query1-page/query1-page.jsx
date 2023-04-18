@@ -1,16 +1,28 @@
 import "./query1-page.css";
-import * as React from "react";
+import React, { useCallback, useEffect } from "react";
 import Plot from 'react-plotly.js';
+import { useQuery } from "react-query";
 
 import { Box, FormGroup, FormControl, FormLabel, FormControlLabel,   
         Select, MenuItem, Checkbox, Divider, Typography, Radio, RadioGroup} from '@mui/material';
 
+const fetchQuery1Data = async () => {
+	const res = await fetch("http://localhost:8081/query_1_data");
+	return res.json();
+};
 
 function Template() {
 
   let [season, setSeason] = React.useState('');
   let [covidStatus, setCovidStatus] = React.useState('');
   let [crimeGroups, setCrimeGroups] = React.useState([]);
+  const [dataLoading, setDataLoading] = React.useState(false);
+  const [crimeX, setCrimeX] = React.useState([]);
+  const [crimeY, setCrimeY] = React.useState([]);
+  const [covidX, setCovidX] = React.useState([]);
+  const [covidY, setCovidY] = React.useState([]);
+
+  const { isLoading, error, data } = useQuery("query1Data", fetchQuery1Data);
 
   const changeSeason = (event) => {
     setSeason(event.target.value);
@@ -22,15 +34,87 @@ function Template() {
     setCrimeGroups( arr => [...arr, event.target.value]);
   };
 
+  useEffect(() => {
+    if (data !== undefined) {
+      setDataLoading(false);
+      setCrimeX(data['crimeWeek']);
+      setCrimeY(data['crimePercent']);
+      setCovidX(data['covidWeek']);
+      setCovidY(data['covidPercent']);
+    }
+  }, [data]);
+
   //console.log(covidStatus);
   //console.log(season);
   //console.log(crimeGroups);
 
-  const sendQ1Filters = async () => {
-    const res = await fetch("http://localhost:8081/query_2_data");
-    return res.json();
+  var covid = {
+    x: covidX,
+    y: covidY,
+    type: 'bar',
+    mode: 'lines+markers',
+    name: 'covidCases',
+    marker: {color: 'purple'}
+    
   };
 
+  var covidScatter = {
+    x: covidX,
+    y: covidY,
+    type: 'scatter',
+    mode: 'lines',
+    name: 'scatterCovidCases',
+    marker: {color: 'purple'},
+    line: {
+      dash: 'dot',
+      width: 4
+    }
+    
+  };
+
+  var crime = {
+    x: crimeX,
+    y: crimeY,
+    type: 'bar',
+    mode: 'lines+markers',
+    name: 'crimeCases',
+    marker: {color: 'blue'}
+  };
+
+  var crimeScatter = {
+    x: crimeX,
+    y: crimeY,
+    type: 'scatter',
+    mode: 'lines',
+    name: 'scatterCrimeCases',
+    marker: {color: 'blue'},
+    line: {
+      dash: 'dot',
+      width: 4
+    }
+  };
+
+  var layout={
+    autosize: false, 
+    width: 1100,
+    height: 600,
+    xaxis: {
+      title: 'Weeks',
+      showticklabels: true,
+      autotick: false,
+      tickwidth: 2,
+      ticklen: 5
+    },
+    yaxis:{
+      title: 'Percentage Change of Cases'
+      
+    },
+  };
+
+  var dataset =[crime, crimeScatter, covid, covidScatter];
+
+
+                
   return (
     <div className="query-1-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
@@ -43,18 +127,10 @@ function Template() {
         </Divider>
           <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
               <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
-                <Plot
-                  data={[
-                    {
-                      x: ["2013-10-04 22:23:00", "2013-11-04 22:23:00", "2013-12-04 22:23:00"], //weeks
-                      y: [1, 3, 6], //percentage change
-                      type: 'scatter',
-                      mode: 'lines+markers',
-                      marker: {color: 'purple'},
-                    },
-                  ]
-                  }
-                  layout={ {width: 1200, height: 600} }
+                <Plot 
+                  data={dataset}
+                  layout={layout}
+
                 />
               </Box>
               <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
