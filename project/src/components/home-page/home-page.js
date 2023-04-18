@@ -1,10 +1,11 @@
 import * as React from 'react';
-import template from "./home-page.jsx";
+import Template from "./home-page.jsx";
 
 class HomePage extends React.Component {
-  
   render() {
-    return template.call(this);
+    return (
+      <Template />
+    );
   }
 }
 
