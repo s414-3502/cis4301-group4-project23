@@ -1,12 +1,21 @@
 import "./query4-page.css";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import Plot from 'react-plotly.js';
-import { Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider, Typography} from '@mui/material';
-
+import { Button, Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider, Typography} from '@mui/material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import { useQuery } from "react-query";
+
+const fetchQuery4Data = async () => {
+	const res = await fetch("http://localhost:8081/query_4_data");
+	return res.json();
+};
+
 function Template() {
   const [premises, setPremises] = React.useState('');
   const [time, setTime] = React.useState('');
+  const [dataLoading, setDataLoading] = React.useState(false);
+  const [x, setX] = React.useState([]);
+  const [y, setY] = React.useState([]);
 
   const changePremises = (event) => {
     setPremises(event.target.value);
@@ -14,6 +23,17 @@ function Template() {
   const changeTime = (event) => {
     setTime(event.target.value);
   };
+
+  const { isLoading, error, data } = useQuery("query4Data", fetchQuery4Data);
+
+  useEffect(() => {
+    if (data !== undefined && premises !== '') {
+      setDataLoading(false);
+      setX(data['X_Data']);
+      setY(data['Y_Data']);
+    }
+  }, [data, premises]);
+
   return (
     <div className="query-4-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
@@ -30,8 +50,8 @@ function Template() {
           <Plot
               data={[
                 {
-                  x: ["2013-10-04 22:23:00", "2013-11-04 22:23:00", "2013-12-04 22:23:00"],
-                  y: [1, 3, 6],
+                  x: x,
+                  y: y,
                   type: 'scatter',
                   mode: 'lines+markers',
                   marker: {color: 'purple'},
@@ -117,6 +137,10 @@ function Template() {
                   <MenuItem value={4}>12AM <ArrowRightAltIcon vertical-align="middle"/> 5:59AM</MenuItem>
                 </Select>
                 <i>all time ranges are 6 hours long</i>
+                <Button variant="contained" onClick={() => {
+                  setPremises( premises + "1");
+                  setDataLoading(true);
+                }}>Save</Button>
               </FormControl>
             </Box>
           </Box>
