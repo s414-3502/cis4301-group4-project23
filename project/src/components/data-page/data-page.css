@@ -1,0 +1,44 @@
+.section-divider {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-right: 40px;
+    border: 1px solid #b0acac;
+    width: 90%;
+}
+
+.data  {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 30px;
+    padding: 0 200px;
+}
+
+.data-title{
+    font-size: 20px;
+    color: #9E97CC;
+}
+
+.data table {
+    border: 1px solid #8a8aa4;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    text-align: left;
+}
+.data caption {
+    caption-side: top;
+    text-align: left;
+}
+.data th {
+    border: 1px solid #8a8aa4;
+    background-color: #ABA7C6;
+    color: #000000;
+    padding: 10px;
+}
+.data td {
+    border: 1px solid #8a8aa4;
+    background-color: #EAE6EB;
+    color: #000000;
+    padding: 10px;
+}
