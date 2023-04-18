@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 var express = require('express');
 var app = express();
 
@@ -8,13 +10,16 @@ var app = express();
 // }
 
 const oracledb = require("oracledb");
+const user = process.env.REACT_APP_USERNAME;
+const password = process.env.REACT_APP_PW;
+
 async function fetchDataFromQuery(query) {
     console.log("fetching connection")
   try {
     let connection = await oracledb.getConnection(
       {
-        user: "ananya.agrawal",
-        password: "ZmvvaFGzJyksdMiwCk2bItDc",
+        user: user,
+        password: password,
         connectionString: "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = oracle.cise.ufl.edu)(PORT = 1521))(CONNECT_DATA=(SID=ORCL)))"
       }
     )
