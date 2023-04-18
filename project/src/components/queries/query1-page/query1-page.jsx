@@ -19,13 +19,17 @@ function Template() {
     setCovidStatus(event.target.value);
   };
   const changeCrimeGroups = (event) => {
-    //setCrimeGroups.push(event.target.value);
     setCrimeGroups( arr => [...arr, event.target.value]);
   };
-  
+
   //console.log(covidStatus);
   //console.log(season);
   //console.log(crimeGroups);
+
+  const sendQ1Filters = async () => {
+    const res = await fetch("http://localhost:8081/query_2_data");
+    return res.json();
+  };
 
   return (
     <div className="query-1-page">
@@ -62,7 +66,7 @@ function Template() {
                     <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Crime Groupings</FormLabel>
                   </Divider>
                   <i class="hint">*select up to 3</i>
-                  <FormGroup>
+                  <FormGroup action="/query_1_data" method="post">
                     <FormControlLabel control={<Checkbox value={"g1"} onChange={changeCrimeGroups}/> } label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
                     <FormControlLabel control={<Checkbox value={"g2"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
                     <FormControlLabel control={<Checkbox value={"g3"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
