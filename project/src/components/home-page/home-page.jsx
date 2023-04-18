@@ -1,5 +1,5 @@
 import "./home-page.css";
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,6 +8,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { Link } from "react-router-dom";
 import { ButtonBase, Typography } from '@mui/material';
+import { useQuery } from "react-query";
+
+const fetchQueryCountData = async () => {
+	const res = await fetch("http://localhost:8081/count");
+	return res.json();
+};
 
 //light purple
 const Item = styled(Paper)(({ theme }) => ({
@@ -39,12 +45,22 @@ const Item3 = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary
 }));
 
+function Template() {
+  const [dataLoading, setDataLoading] = React.useState(false);
+  const [count, setCount] = React.useState([]);
 
+  const { isLoading, error, data } = useQuery("queryCountData", fetchQueryCountData);
 
-function template() {
   return (
     <div className="home-page">
       <Box sx={{ flexGrow: 1,  height: 700,}}>
+      <h3>
+      <button onClick={() => {setCount(data['tupleCount'])}}>
+        Generate Count!
+      </button>
+        Database Tuple Count: {count}
+      </h3>
+      
       <Grid container spacing={2} alignItems="center" justifyContent="center">
         <Grid xs={10} >
           <Item>
@@ -101,14 +117,11 @@ function template() {
       </Grid>
       <br />
       <br />
-      <ButtonBase>
-        <Item3>
-            <h2>Click to Calculate Number of Tuples in Dataset</h2>
-        </Item3>
-      </ButtonBase>
       </Box>
     </div>
   );
 };
 
-export default template;
+export default Template;
+
+

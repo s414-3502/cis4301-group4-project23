@@ -27,7 +27,7 @@ async function fetchDataFromQuery(query) {
   console.log("Hello!")    
 }
 
-var count = ``
+var count = `SELECT COUNT(CRM_CD) FROM WGREGORY.LA_CRIME`
 
 var q1 = ``
 
@@ -497,6 +497,7 @@ var q5 = ``
 
 async function parseDataFromQuery(query) {
     const output = await fetchDataFromQuery(query);
+    console.log(output);
     let X = [];
     let Y = [];
 
@@ -512,19 +513,12 @@ async function parseDataFromQuery(query) {
 }
 
 async function parseCountFromQuery(query) { 
-    //still need to correct implementation
     const output = await fetchDataFromQuery(query);
-    let X = [];
-    let Y = [];
-
     let rows = output['rows'][0];
-    for (let i = 0; i < output['metaData'].length; i = i + 3) {
-        Y.push(rows[i + 1]);
-        X.push(rows[i + 2]);
-    }
-    return {
-        "X_Data": X,
-        "Y_Data": Y,
+    let tupleCount = rows[0];
+    
+    return{
+        "tupleCount": tupleCount,
     };
 }
 
