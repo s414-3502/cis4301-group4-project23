@@ -8,8 +8,9 @@ import { Box, FormGroup, FormControl, FormLabel, FormControlLabel,
 
 function Template() {
 
-  const [season, setSeason] = React.useState('');
-  const [covidStatus, setCovidStatus] = React.useState('');
+  let [season, setSeason] = React.useState('');
+  let [covidStatus, setCovidStatus] = React.useState('');
+  let [crimeGroups, setCrimeGroups] = React.useState([]);
 
   const changeSeason = (event) => {
     setSeason(event.target.value);
@@ -17,6 +18,14 @@ function Template() {
   const changeCovidStatus = (event) => {
     setCovidStatus(event.target.value);
   };
+  const changeCrimeGroups = (event) => {
+    //setCrimeGroups.push(event.target.value);
+    setCrimeGroups( arr => [...arr, event.target.value]);
+  };
+  
+  //console.log(covidStatus);
+  //console.log(season);
+  //console.log(crimeGroups);
 
   return (
     <div className="query-1-page">
@@ -54,18 +63,18 @@ function Template() {
                   </Divider>
                   <i class="hint">*select up to 3</i>
                   <FormGroup>
-                    <FormControlLabel control={<Checkbox defaultChecked />} label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g1"} onChange={changeCrimeGroups}/> } label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g2"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g3"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g4"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g5"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g6"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g7"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g8"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g9"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g10"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g11"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
+                    <FormControlLabel control={<Checkbox value={"g12"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
                   </FormGroup>
                   <i>*See data page for Crime Groupings</i>
                 </FormControl>
