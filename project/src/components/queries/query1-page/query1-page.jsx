@@ -106,7 +106,7 @@ function Template() {
                     return {
                       x: entry[0],
                       y: entry[1],
-                      type: 'scatter',
+                      type: 'bar',
                       mode: 'lines+markers',
                       marker: {color: 'purple'},
                     }
