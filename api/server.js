@@ -970,152 +970,158 @@ function generateQuery5(crimeGroups){
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2010' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a10,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-           AND cg.CRIME_GROUP = 'MINOR CRIMES'
+           AND ${crimeGroupFilter}
             ) w11,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a11,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w12,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a12,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w13,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a13,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w14,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a14,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w15,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a15,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w16,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a16,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w17,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a17,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w18,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a18,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w19,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a19,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w20,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a20,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w21,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a21,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) w22,
             (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
             FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
             WHERE l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
             AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES'
+            AND ${crimeGroupFilter}
             ) a22`
+    fs.writeFile('test.txt', query_5, err => {
+        if (err) {
+            console.error(err);
+        }
+        // file written successfully
+    });
     return query_5
 }
 
@@ -1302,9 +1308,18 @@ app.get('/query_4_data', function (req, res) {
 })
 
 app.get('/query_5_data', function (req, res) {
-    parseDataFromQuery(generateQuery5(req.query.crimeGroups)).then((output) => {
-        res.end(JSON.stringify(output))        
-    })
+    console.log("REQ, ", req.query);
+    if (req.query.crimeGroups === '') {
+        res.end(JSON.stringify({
+            "Data_Count": 0,
+            "Data": []
+        }));
+    }
+    else{
+        parseDataFromQuery(generateQuery5(req.query.crimeGroups)).then((output) => {
+            res.end(JSON.stringify(output))        
+        })
+    }
 })
 
 var server = app.listen(8081, function () {

@@ -106,18 +106,16 @@ function Template() {
                 </Divider>
                 <i class="hint">*select up to 3</i>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
+                  {
+                    crimeGroupNames.map((name, index) => {
+                      return <FormControlLabel control={<Checkbox onChange={(event) => {
+                        let temp = toggleValues;
+                        temp[index] = event.target.checked;
+                        setToggleValues(temp)
+                        console.log(toggleValues);
+                      }} />} label={<Typography sx={{ fontSize: 14, }}>{name}</Typography>} />
+                    })
+                  }
                 </FormGroup>
                 <i>*See data page for Crime Groupings</i>
                 <Button variant="contained" onClick={() => {handleSave()}}>Save</Button>
