@@ -1,21 +1,52 @@
 import "./query4-page.css";
-import React, { useCallback, useEffect } from "react";
-import Plot from 'react-plotly.js';
+import React, { useEffect, useState } from "react";
 import { Button, Box, FormGroup, FormControl, FormLabel, FormControlLabel, Select, MenuItem, Checkbox, Divider, Typography} from '@mui/material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+
+import Plot from 'react-plotly.js';
 import { useQuery } from "react-query";
 
-const fetchQuery4Data = async () => {
-	const res = await fetch("http://localhost:8081/query_4_data");
+const fetchQuery4Data = async ({ queryKey }) => {
+  const [_, premises, crimeGroups, time] = queryKey;
+  console.log(premises, crimeGroups, time)
+	const res = await fetch("http://localhost:8081/query_4_data" + "?" + (new URLSearchParams({
+    premises,
+    crimeGroups,
+    time
+  }).toString()));
 	return res.json();
 };
 
 function Template() {
-  const [premises, setPremises] = React.useState('');
-  const [time, setTime] = React.useState('');
-  const [dataLoading, setDataLoading] = React.useState(false);
-  const [x, setX] = React.useState([]);
-  const [y, setY] = React.useState([]);
+  let [premises, setPremises] = useState('');
+  let [time, setTime] = useState('');
+  const [dataLoading, setDataLoading] = useState(false);
+  const [graphData, setGraphData] = useState([]);
+
+  const [graphParams, setGraphParams] = useState({
+    premises: '',
+    crimeGroups: '',
+    time: ''
+  });
+
+  const crimeGroupNames = [ 'MINOR CRIMES',
+  'BURGLARIES, THEFT AND PROPERTY CRIMES',
+  'SEXUAL CRIMES',
+  'ROBBERY OR THEFT AGAINST A PERSON',
+  'DRUGS',
+  'WHITE COLLAR CRIME',
+  'VULNERABLE ADULT CRIMES',
+  'SERIOUS OR VIOLENT CRIMES AND OFFENSES',
+  'VEHICLE RELATED CRIMES',
+  'BATTERY OR ASSAULT',
+  'CHILD ABUSE',
+  'GUN CRIMES'];
+
+  const [toggleValues, setToggleValues] = useState(crimeGroupNames.map(() => {
+    return false
+  }));
+
+  const { isLoading, error, data } = useQuery(["query4Data", graphParams.premises, graphParams.crimeGroups, graphParams.time], fetchQuery4Data);
 
   const changePremises = (event) => {
     setPremises(event.target.value);
@@ -24,42 +55,62 @@ function Template() {
     setTime(event.target.value);
   };
 
-  const { isLoading, error, data } = useQuery("query4Data", fetchQuery4Data);
-
   useEffect(() => {
     if (data !== undefined && premises !== '') {
       setDataLoading(false);
-      setX(data['X_Data']);
-      setY(data['Y_Data']);
+      setGraphData(data['Data']);
     }
   }, [data, premises]);
+
+  const handleSave = () => {
+    let countTotalSelected = 0;
+    let selectedValues = [];
+    toggleValues.forEach((value, index) => {
+      if (value) {
+        countTotalSelected++;
+        selectedValues.push(crimeGroupNames[index]);
+      }
+    })
+    if (countTotalSelected == 0 || countTotalSelected > 3) {
+      console.log("Error");
+    }
+    else {
+      console.log("passed")
+      setGraphData([]);
+      console.log(selectedValues);
+      setGraphParams({
+        premises,
+        crimeGroups: selectedValues.join("#"),
+        time
+      })
+      setDataLoading(true);
+    }
+  }
 
   return (
     <div className="query-4-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
-        <h1>The Connection Between Time, Premises, and Crime Type</h1>
+        <h1>{dataLoading ? "loading..." : "The Connection Between Time, Premises, and Crime Type"}</h1>
         <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
           <Typography sx={{color:"#484273", fontSize: 13,}}>
             Provides users with various crime trends associated with different times 
             in the day at different places. 
           </Typography>
         </Divider>
-        
         <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
           <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
-          <Plot
-              data={[
-                {
-                  x: x,
-                  y: y,
-                  type: 'scatter',
-                  mode: 'lines+markers',
-                  marker: {color: 'purple'},
-                },
-              ]
-              }
-              layout={ {width: 1200, height: 600} }
-          />
+            <Plot
+                data={graphData.map((entry) => {
+                  return {
+                    x: entry[0],
+                    y: entry[1],
+                    type: 'bar',
+                    mode: 'lines+markers',
+                    marker: {color: 'purple'},
+                  }
+                })}
+                layout={ {width: 1200, height: 600} }
+            />
           </Box>
           <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
             <h5>DATA FILTERS</h5>
@@ -75,24 +126,18 @@ function Template() {
                   onChange={changePremises}
                   sx={{width:'90%', alignSelf:'center', borderRadius:2, height:30, backgroundColor:"#CCBBD0"}}
                   >
-                  <MenuItem value={1}>STREET</MenuItem>
-                  <MenuItem value={2}>SINGLE FAMILY DWELLING</MenuItem>
-                  <MenuItem value={3}>MULTI-UNIT DWELLING</MenuItem>
-                  <MenuItem value={4}>PARKING LOT</MenuItem>
-                  <MenuItem value={5}>OTHER BUSINESS</MenuItem>
-                  <MenuItem value={6}>SIDEWALK</MenuItem>
-                  <MenuItem value={7}>VEHICLE, PASSENGER/TRUCK</MenuItem>
-                  <MenuItem value={8}>DRIVEWAY</MenuItem>
-                  <MenuItem value={9}>GARAGE/CARPORT</MenuItem>
-                  <MenuItem value={10}>RESTAURANT/FAST FOOD</MenuItem>
-                  <MenuItem value={11}>DEPARTMENT STORE</MenuItem>
-                  <MenuItem value={12}>MARKET</MenuItem>
-                  <MenuItem value={13}>OTHER STORE</MenuItem>
-                  <MenuItem value={14}>PARKING UNDERGROUND/BUILDING</MenuItem>
-                  <MenuItem value={15}>YARD</MenuItem>
-                  <MenuItem value={16}>ALLEY</MenuItem>
-                  <MenuItem value={17}>PARK/PLAYGROUND</MenuItem>
-                  <MenuItem value={18}>OTHER</MenuItem>
+                  <MenuItem value={1}>ALLEY</MenuItem>
+                  <MenuItem value={2}>DRIVEWAY</MenuItem>
+                  <MenuItem value={3}>GARAGE/CARPORT</MenuItem>
+                  <MenuItem value={4}>GAS STATION</MenuItem>
+                  <MenuItem value={5}>MOBILE HOME/TRAILERS/CONSTRUCTION TRAILERS/RV''S/MOTORHOME</MenuItem>
+                  <MenuItem value={6}>MULTI-UNIT DWELLING (APARTMENT, DUPLEX, ETC)</MenuItem>
+                  <MenuItem value={7}>OTHER BUSINESS</MenuItem>
+                  <MenuItem value={8}>OTHER PREMISE</MenuItem>
+                  <MenuItem value={9}>POST OFFICE</MenuItem>
+                  <MenuItem value={10}>SINGLE FAMILY DWELLING</MenuItem>
+                  <MenuItem value={11}>STREET</MenuItem>
+                  <MenuItem value={12}>VEHICLE, PASSENGER/TRUCK</MenuItem>
                 </Select>
                 <i>crime location/premises</i>
               </FormControl>
@@ -104,18 +149,16 @@ function Template() {
                 </Divider>
                 <i class="hint">*select up to 3</i>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
+                  {
+                    crimeGroupNames.map((name, index) => {
+                      return <FormControlLabel control={<Checkbox onChange={(event) => {
+                        let temp = toggleValues;
+                        temp[index] = event.target.checked;
+                        setToggleValues(temp)
+                        console.log(toggleValues);
+                      }} />} label={<Typography sx={{ fontSize: 14, }}>{name}</Typography>} />
+                    })
+                  }
                 </FormGroup>
                 <i>*See data page for Crime Groupings</i>
               </FormControl>
@@ -137,10 +180,7 @@ function Template() {
                   <MenuItem value={4}>12AM <ArrowRightAltIcon vertical-align="middle"/> 5:59AM</MenuItem>
                 </Select>
                 <i>all time ranges are 6 hours long</i>
-                <Button variant="contained" onClick={() => {
-                  setPremises( premises + "1");
-                  setDataLoading(true);
-                }}>Save</Button>
+                <Button variant="contained" onClick={() => {handleSave()}}>Save</Button>
               </FormControl>
             </Box>
           </Box>
