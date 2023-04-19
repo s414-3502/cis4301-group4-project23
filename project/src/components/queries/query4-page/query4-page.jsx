@@ -107,7 +107,7 @@ function Template() {
   function scatterName(){
     let crimeGroupVals = graphParams.crimeGroups.split('#');
     let outVal = crimeGroupVals[dataIndex];
-    if(dataIndex < 3){
+    if(dataIndex < (crimeGroupVals.length - 1)){
       dataIndex += 1;
     }
     else{

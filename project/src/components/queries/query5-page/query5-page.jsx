@@ -15,6 +15,8 @@ const fetchQuery5Data = async ({ queryKey }) => {
 };
 
 function Template() {
+  let col = 1;
+  let dataIndex = 0;
   const [dataLoading, setDataLoading] = useState(false);
   const [graphData, setGraphData] = useState([]);
 
@@ -71,6 +73,33 @@ function Template() {
     }
   }
 
+  function scatterColor(){
+    if(col == 1){
+      col += 1;
+      return 'purple';
+    }
+    else if(col == 2){
+      col += 1;
+      return 'orange';
+    }
+    else{
+      col = 1;
+    }
+    return 'blue';
+  }
+
+  function scatterName(){
+    let crimeGroupVals = graphParams.crimeGroups.split('#');
+    let outVal = crimeGroupVals[dataIndex];
+    if(dataIndex < (crimeGroupVals.length - 1)){
+      dataIndex += 1;
+    }
+    else{
+      dataIndex = 0;
+    }
+    return outVal;
+  }
+
   return (
     <div className="query-5-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
@@ -81,22 +110,42 @@ function Template() {
             30 days versus within 30 days
           </Typography>
         </Divider>
-        <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
-          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
+        <Box sx={{display: 'flex', justifyContent: 'space-between', m:8, mt:0, ml:1, height:'65%'}}>
+          <Box sx={{height:600, border: 1, borderColor: 'gray', borderRadius:3, p:0}}>
             <Plot
-              data={graphData.map((entry) => {
-                return {
-                  x: entry[0],
-                  y: entry[1],
-                  type: 'bar',
-                  mode: 'lines+markers',
-                  marker: {color: 'purple'},
-                }
-              })}
-              layout={ {width: 1200, height: 600} }
+                sx={{m:0}}
+                data={graphData.map((entry) => {
+                  return {
+                    name: 'Reported before 30 days',
+                    x: entry[0],
+                    y: entry[1],
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    marker: {color: scatterColor()},
+                    line:{
+                      dash: 'dot'
+                    }
+                  }
+                })}
+                layout={ {
+                  xaxis:{
+                    title: "Year"
+                  },
+                  yaxis:{
+                    title: "Percentage"
+                  },
+                  width: 1000, 
+                  height: 500,
+                  showlegend: true,
+                  legend: {
+                    x: 1,
+                    xanchor: 'right',
+                    y: 1
+                  }
+                } }
             />
           </Box>
-          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
+          <Box sx={{display: 'flex', flexDirection:'column', mr:-5, ml:1, mt:-5}}>
             <h5>DATA FILTERS</h5>
             <p class="hint">select up to 3 crime groupings below</p>
             <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%', maxHeight:'100%', overflowY:"scroll",}}>
@@ -118,9 +167,13 @@ function Template() {
                   }
                 </FormGroup>
                 <i>*See data page for Crime Groupings</i>
-                <Button variant="contained" onClick={() => {handleSave()}}>Save</Button>
               </FormControl>
             </Box>
+            <Button
+                sx={{m:1, backgroundColor:"#95799c", width: '60%', alignSelf:'center'}} 
+                variant="contained" 
+                onClick={() => {handleSave()}}>Save
+            </Button>
           </Box> 
         </Box>
       </Box>
