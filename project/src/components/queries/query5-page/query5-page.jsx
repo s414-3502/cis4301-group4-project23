@@ -19,9 +19,7 @@ function Template() {
   const [graphData, setGraphData] = useState([]);
 
   const [graphParams, setGraphParams] = useState({
-    premises: '',
     crimeGroups: '',
-    time: ''
   });
 
   const crimeGroupNames = [ 'MINOR CRIMES',
