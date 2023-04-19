@@ -1,5 +1,5 @@
 import "./query2-page.css";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Plot from 'react-plotly.js';
 
 import { Box, FormControlLabel, FormControl, FormLabel,
@@ -8,30 +8,88 @@ import { Box, FormControlLabel, FormControl, FormLabel,
           Button }from '@mui/material';
 import { useQuery } from "react-query";
 
-const fetchQuery2Data = async () => {
-	const res = await fetch("http://localhost:8081/query_2_data");
+const fetchQuery2Data = async ({ queryKey }) => {
+  const [_, district, vehicleCrimeTypes] = queryKey;
+  console.log(district, vehicleCrimeTypes)
+	const res = await fetch("http://localhost:8081/query_2_data" + "?" + (new URLSearchParams({
+    district,
+    vehicleCrimeTypes,
+  }).toString()));
 	return res.json();
 };
 
 function Template() {
   const [district, setDistrict] = React.useState('');
   const [dataLoading, setDataLoading] = React.useState(false);
-  const [x, setX] = React.useState([]);
-  const [y, setY] = React.useState([]);
+  const [graphData, setGraphData] = useState([]);
+
+  const [graphParams, setGraphParams] = useState({
+    district: '',
+    vehicleCrimeTypes: '',
+  });
+
+  const vehicleCrimeTypesNames = [ 'DRIVING WITHOUT OWNER CONSENT (DWOC)',
+  'GRAND THEFT / AUTO REPAIR',
+  'PETTY THEFT - AUTO REPAIR',
+  'RECKLESS DRIVING',
+  'SHOTS FIRED AT MOVING VEHICLE, TRAIN OR AIRCRAFT',
+  'THEFT FROM MOTOR VEHICLE - ATTEMPT',
+  'THEFT FROM MOTOR VEHICLE - GRAND ($950.01 AND OVER)',
+  'THEFT FROM MOTOR VEHICLE - PETTY ($950 AND UNDER)',
+  'THROWING OBJECT AT MOVING VEHICLE',
+  'TRAIN WRECKING',
+  'VEHICLE - ATTEMPT STOLEN',
+  'VEHICLE - MOTORIZED SCOOTERS, BICYCLES, AND WHEELCHAIRS',
+  'VEHICLE - STOLEN',
+  'BIKE - STOLEN',
+  'BOAT - STOLEN',
+  'BURGLARY FROM VEHICLE',
+  'BURGLARY FROM VEHICLE, ATTEMPTED'];
+  
+  const [toggleValues, setToggleValues] = useState(vehicleCrimeTypesNames.map(() => {
+    return false
+  }));
 
   const changeDistrict = (event) => {
     setDistrict(event.target.value);
   }
 
-  const { isLoading, error, data } = useQuery("query2Data", fetchQuery2Data);
+  const { isLoading, error, data } = useQuery(["query2Data", graphParams.district, graphParams.vehicleCrimeTypes], fetchQuery2Data);
+  
+  const validateInput = () => {
+    
+  }
 
   useEffect(() => {
-    if (data !== undefined && district !== '') {
+    if (data !== undefined) {
       setDataLoading(false);
-      setX(data['X_Data']);
-      setY(data['Y_Data']);
+      setGraphData(data['Data']);
     }
-  }, [data, district]);
+  }, [data, graphParams]);
+
+  const handleSave = () => {
+    let countTotalSelected = 0;
+    let selectedValues = [];
+    toggleValues.forEach((value, index) => {
+      if (value) {
+        countTotalSelected++;
+        selectedValues.push(vehicleCrimeTypesNames[index]);
+      }
+    })
+    if (countTotalSelected == 0 || countTotalSelected > 5) {
+      console.log("Error");
+    }
+    else {
+      console.log("passed")
+      setGraphData([]);
+      console.log(selectedValues);
+      setGraphParams({
+        district,
+        vehicleCrimeTypes: selectedValues.join("#")
+      })
+      setDataLoading(true);
+    }
+  }
 
   return (
     <div className="query-2-page">
@@ -47,17 +105,15 @@ function Template() {
         <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
           <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
             <Plot
-              data={[
-                {
-                  x: x
-                  ,
-                  y: y
-                 ,
+              data={graphData.map((entry) => {
+                return {
+                  x: entry[0],
+                  y: entry[1],
                   type: 'scatter',
                   mode: 'lines+markers',
                   marker: {color: 'purple'},
-                },
-              ]}
+                }
+              })}
               layout={ {width: 1200, height: 600} }
               />
           </Box>
@@ -90,19 +146,21 @@ function Template() {
                   </Divider>
                   <i class="hint">select up to 5</i>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox ok />} label={<Typography sx={{ fontSize: 14, }}>Stolen Vehicle**</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Reckless Driving</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Grand Theft</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Petty Theft</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Attempted Theft</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Train Wrecking</Typography>} />
-                  <FormControlLabel control={<Checkbox />} label={<Typography sx={{ fontSize: 14, }}>Vandalized Vehicle</Typography>} />
+                  {
+                    vehicleCrimeTypesNames.map((name, index) => {
+                      return <FormControlLabel control={<Checkbox onChange={(event) => {
+                        let temp = toggleValues;
+                        temp[index] = event.target.checked;
+                        setToggleValues(temp)
+                        console.log(toggleValues);
+                      }} />} label={<Typography sx={{ fontSize: 14, }}>{name}</Typography>} />
+                    })
+                  }
                 </FormGroup>
                 <i>*See Data Page for Crime Types</i>
                 <i>**includes (but not limited to: motor vehicles, motorized scooters, bicycles, wheelchairs, etc.)</i>
                 <Button variant="contained" onClick={() => {
-                  setDistrict( district + "1");
-                  setDataLoading(true);
+                  handleSave()
                 }}>Save</Button>
               </FormControl>
             </Box>

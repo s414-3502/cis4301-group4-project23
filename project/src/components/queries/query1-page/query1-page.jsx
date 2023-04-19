@@ -1,13 +1,19 @@
 import "./query1-page.css";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Plot from 'react-plotly.js';
 import { useQuery } from "react-query";
 
 import { Box, FormGroup, FormControl, FormLabel, FormControlLabel,   
-        Select, MenuItem, Checkbox, Divider, Typography, Radio, RadioGroup} from '@mui/material';
+        Select, MenuItem, Button, Checkbox, Divider, Typography, Radio, RadioGroup} from '@mui/material';
 
-const fetchQuery1Data = async () => {
-	const res = await fetch("http://localhost:8081/query_1_data");
+const fetchQuery1Data = async ({ queryKey }) => {
+  const [_, covidStatus, season, crimeGroups] = queryKey;
+  console.log(covidStatus, season, crimeGroups)
+	const res = await fetch("http://localhost:8081/query_1_data" + "?" + (new URLSearchParams({
+    covidStatus,
+    season,
+    crimeGroups
+  }).toString()));
 	return res.json();
 };
 
@@ -15,14 +21,33 @@ function Template() {
 
   let [season, setSeason] = React.useState('');
   let [covidStatus, setCovidStatus] = React.useState('');
-  let [crimeGroups, setCrimeGroups] = React.useState([]);
   const [dataLoading, setDataLoading] = React.useState(false);
-  const [crimeX, setCrimeX] = React.useState([]);
-  const [crimeY, setCrimeY] = React.useState([]);
-  const [covidX, setCovidX] = React.useState([]);
-  const [covidY, setCovidY] = React.useState([]);
+  const [graphData, setGraphData] = useState([]);
 
-  const { isLoading, error, data } = useQuery("query1Data", fetchQuery1Data);
+  const [graphParams, setGraphParams] = useState({
+    covidStatus: '',
+    season: '',
+    crimeGroups: ''
+  });
+
+  const crimeGroupNames = [ 'MINOR CRIMES',
+  'BURGLARIES, THEFT AND PROPERTY CRIMES',
+  'SEXUAL CRIMES',
+  'ROBBERY OR THEFT AGAINST A PERSON',
+  'DRUGS',
+  'WHITE COLLAR CRIME',
+  'VULNERABLE ADULT CRIMES',
+  'SERIOUS OR VIOLENT CRIMES AND OFFENSES',
+  'VEHICLE RELATED CRIMES',
+  'BATTERY OR ASSAULT',
+  'CHILD ABUSE',
+  'GUN CRIMES'];
+
+  const [toggleValues, setToggleValues] = useState(crimeGroupNames.map(() => {
+    return false
+  }));
+
+  const { isLoading, error, data } = useQuery(["query1Data", graphParams.covidStatus, graphParams.season, graphParams.crimeGroups], fetchQuery1Data);
 
   const changeSeason = (event) => {
     setSeason(event.target.value);
@@ -30,95 +55,44 @@ function Template() {
   const changeCovidStatus = (event) => {
     setCovidStatus(event.target.value);
   };
-  const changeCrimeGroups = (event) => {
-    setCrimeGroups( arr => [...arr, event.target.value]);
-  };
 
-  useEffect(() => {
+    useEffect(() => {
     if (data !== undefined) {
       setDataLoading(false);
-      setCrimeX(data['crimeWeek']);
-      setCrimeY(data['crimePercent']);
-      setCovidX(data['covidWeek']);
-      setCovidY(data['covidPercent']);
+      setGraphData(data['Data']);
     }
-  }, [data]);
-
-  //console.log(covidStatus);
-  //console.log(season);
-  //console.log(crimeGroups);
-
-  var covid = {
-    x: covidX,
-    y: covidY,
-    type: 'bar',
-    mode: 'lines+markers',
-    name: 'covidCases',
-    marker: {color: 'purple'}
-    
-  };
-
-  var covidScatter = {
-    x: covidX,
-    y: covidY,
-    type: 'scatter',
-    mode: 'lines',
-    name: 'scatterCovidCases',
-    marker: {color: 'purple'},
-    line: {
-      dash: 'dot',
-      width: 4
+  }, [data, graphParams]);
+  
+  const handleSave = () => {
+    let countTotalSelected = 0;
+    let selectedValues = [];
+    toggleValues.forEach((value, index) => {
+      if (value) {
+        countTotalSelected++;
+        selectedValues.push(crimeGroupNames[index]);
+      }
+    })
+    if (countTotalSelected == 0 || countTotalSelected > 3) {
+      console.log("Error");
     }
-    
-  };
-
-  var crime = {
-    x: crimeX,
-    y: crimeY,
-    type: 'bar',
-    mode: 'lines+markers',
-    name: 'crimeCases',
-    marker: {color: 'blue'}
-  };
-
-  var crimeScatter = {
-    x: crimeX,
-    y: crimeY,
-    type: 'scatter',
-    mode: 'lines',
-    name: 'scatterCrimeCases',
-    marker: {color: 'blue'},
-    line: {
-      dash: 'dot',
-      width: 4
+    else {
+      console.log("passed")
+      setGraphData([]);
+      console.log(selectedValues);
+      setGraphParams({
+        covidStatus,
+        season,
+        crimeGroups: selectedValues.join("#")
+      })
+      setDataLoading(true);
     }
-  };
-
-  var layout={
-    autosize: false, 
-    width: 1100,
-    height: 600,
-    xaxis: {
-      title: 'Weeks',
-      showticklabels: true,
-      autotick: false,
-      tickwidth: 2,
-      ticklen: 5
-    },
-    yaxis:{
-      title: 'Percentage Change of Cases'
-      
-    },
-  };
-
-  var dataset =[crime, crimeScatter, covid, covidScatter];
-
-
-                
+  }
+ 
   return (
     <div className="query-1-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
-        <h1>Seasonal L.A. Crime Throughout COVID-19 Seasons</h1>
+        <h1>
+          {dataLoading ? "loading..." : "Seasonal L.A. Crime Throughout COVID-19 Seasons"}</h1>
         <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
           <Typography sx={{color:"#484273", fontSize: 13,}}>
             An overview of crime trends across the four seasons (Spring, Summer, Fall, and Winter) in L.A.
@@ -127,38 +101,22 @@ function Template() {
         </Divider>
           <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
               <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
-                <Plot 
-                  data={dataset}
-                  layout={layout}
-
-                />
+                <Plot
+                  data={graphData.map((entry) => {
+                    return {
+                      x: entry[0],
+                      y: entry[1],
+                      type: 'scatter',
+                      mode: 'lines+markers',
+                      marker: {color: 'purple'},
+                    }
+                  })}
+                  layout={ {width: 1200, height: 600} }
+              />
               </Box>
               <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
               <h5>DATA FILTERS</h5>
               <br />
-              <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%', maxHeight:'40%', overflowY:"scroll",}}>
-                <FormControl fullWidth>
-                  <Divider sx={{mb: 0, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
-                    <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Crime Groupings</FormLabel>
-                  </Divider>
-                  <i class="hint">*select up to 3</i>
-                  <FormGroup action="/query_1_data" method="post">
-                    <FormControlLabel control={<Checkbox value={"g1"} onChange={changeCrimeGroups}/> } label={<Typography sx={{fontSize:14,}}>Minor Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g2"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Serious/Violent Crimes and Offenders</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g3"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Sexual Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g4"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Battery or Assault</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g5"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Child Abuse</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g6"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Gun Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g7"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Robbery/Theft Against Person</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g8"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Burglaries, Theft, and Property Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g9"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Vehicle Related Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g10"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Drugs</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g11"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>Vulnerable Adult Crimes</Typography>}/>
-                    <FormControlLabel control={<Checkbox value={"g12"} onChange={changeCrimeGroups}/>} label={<Typography sx={{fontSize:14,}}>White Collar Crimes</Typography>}/>
-                  </FormGroup>
-                  <i>*See data page for Crime Groupings</i>
-                </FormControl>
-              </Box>
               <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
                 <FormControl fullWidth>
                   <Divider sx={{mb: 1, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
@@ -189,6 +147,30 @@ function Template() {
                       <FormControlLabel class="options" value="No" control={<Radio size="small"/>} label="No" />
                     </RadioGroup>
                   </FormControl>
+              </Box>
+                            <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%', maxHeight:'40%', overflowY:"scroll",}}>
+                <FormControl fullWidth>
+                  <Divider sx={{mb: 0, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
+                    <FormLabel sx={{color:'black', fontWeight: 'medium', width:'100%', textAlign: 'center'}}>Crime Groupings</FormLabel>
+                  </Divider>
+                  <i class="hint">*select up to 3</i>
+                  <FormGroup>
+                    {
+                      crimeGroupNames.map((name, index) => {
+                      return <FormControlLabel control={<Checkbox onChange={(event) => {
+                        let temp = toggleValues;
+                        temp[index] = event.target.checked;
+                        setToggleValues(temp)
+                        console.log(toggleValues);
+                      }} />} label={<Typography sx={{ fontSize: 14, }}>{name}</Typography>} />
+                    })
+                    }
+                  </FormGroup>
+                  <i>*See data page for Crime Groupings</i>
+                  <Button variant="contained" onClick={() => {
+                  handleSave()
+                }}>Save</Button>
+                </FormControl>
               </Box>
             </Box> 
           </Box>
