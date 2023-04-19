@@ -17,6 +17,7 @@ const fetchQuery5Data = async ({ queryKey }) => {
 function Template() {
   let col = 1;
   let dataIndex = 0;
+  let val = 0;
   const [dataLoading, setDataLoading] = useState(false);
   const [graphData, setGraphData] = useState([]);
 
@@ -88,17 +89,36 @@ function Template() {
     return 'blue';
   }
 
-  function scatterName(){
-    let crimeGroupVals = graphParams.crimeGroups.split('#');
-    let outVal = crimeGroupVals[dataIndex];
-    if(dataIndex < (crimeGroupVals.length - 1)){
-      dataIndex += 1;
-    }
-    else{
-      dataIndex = 0;
-    }
-    return outVal;
+  if(graphData.length > 0){
+    val = graphData.at(0);
+    console.log("Val: " + val[2]);
   }
+
+  var oneData = {
+    name: 'Reported within 30 days',
+    x: val[0],
+    y: val[1],
+    type: 'scatter',
+    mode: 'lines+markers',
+    marker: {color: scatterColor()},
+    line:{
+      dash: 'dot'
+    }
+  }
+
+  var twoData = {
+    name: 'Reported after 30 days',
+    x: val[0],
+    y: val[2],
+    type: 'scatter',
+    mode: 'lines+markers',
+    marker: {color: scatterColor()},
+    line:{
+      dash: 'dot'
+    }
+  }
+
+  var dataset = [oneData, twoData];
 
   return (
     <div className="query-5-page">
@@ -114,19 +134,7 @@ function Template() {
           <Box sx={{height:600, border: 1, borderColor: 'gray', borderRadius:3, p:0}}>
             <Plot
                 sx={{m:0}}
-                data={graphData.map((entry) => {
-                  return {
-                    name: 'Reported before 30 days',
-                    x: entry[0],
-                    y: entry[1],
-                    type: 'scatter',
-                    mode: 'lines+markers',
-                    marker: {color: scatterColor()},
-                    line:{
-                      dash: 'dot'
-                    }
-                  }
-                })}
+                data={dataset}
                 layout={ {
                   xaxis:{
                     title: "Year"

@@ -65,13 +65,16 @@ async function parseDataFromQuery5(query) {
 
     for (let entry = 0; entry < rowCount; entry++) {
         let X = [];
-        let Y = [];
+        let Y1 = [];
+        let Y2 = [];
         let rows = output['rows'][entry];
         for (let i = 0; i < output['metaData'].length; i = i + 3) {
-            Y.push(rows[i + 1]);
+            console.log("Data: " + rows[i] + " : " + rows[i+1] + " : " + rows[i+2]);
+            Y1.push(rows[i]);
+            Y2.push(rows[i + 1]);
             X.push(rows[i + 2]);
         }
-        data.push([X, Y]);
+        data.push([X, Y1, Y2]);
     }
 
     console.log("rowct: " + rowCount);
