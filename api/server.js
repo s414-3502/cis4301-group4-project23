@@ -57,6 +57,32 @@ async function parseDataFromQuery(query) {
     };
 }
 
+async function parseDataFromQuery5(query) {
+    const output = await fetchDataFromQuery(query);
+    let rowCount = output['rows'].length;
+    
+    let data = [];
+
+    for (let entry = 0; entry < rowCount; entry++) {
+        let X = [];
+        let Y = [];
+        let rows = output['rows'][entry];
+        for (let i = 0; i < output['metaData'].length; i = i + 3) {
+            Y.push(rows[i + 1]);
+            X.push(rows[i + 2]);
+        }
+        data.push([X, Y]);
+    }
+
+    console.log("rowct: " + rowCount);
+    console.log("data: " + data);
+    
+    return {
+        "Data_Count": rowCount,
+        "Data": data
+    };
+}
+
 
 function generateQuery2(district, vehicleCrimeTypes) {
     // AND l.AREA = d4.AREA
@@ -1290,7 +1316,7 @@ app.get('/query_5_data', function (req, res) {
         }));
     }
     else{
-        parseDataFromQuery(generateQuery5(req.query.crimeGroups)).then((output) => {
+        parseDataFromQuery5(generateQuery5(req.query.crimeGroups)).then((output) => {
             res.end(JSON.stringify(output))        
         })
     }
