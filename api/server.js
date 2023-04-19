@@ -234,6 +234,7 @@ FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct
            (l.DATE_RPTD >= '01-MAR-2021' AND l.DATE_RPTD <= '31-MAY-2021') OR
            (l.DATE_RPTD >= '01-MAR-2022' AND l.DATE_RPTD <= '31-MAY-2022')) AND 
            l.DATE_RPTD IS NOT NULL`
+           
 //query 3 section:   
 var q3 = ``
 
