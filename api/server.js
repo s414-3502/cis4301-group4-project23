@@ -1129,31 +1129,6 @@ async function parseDataFromQuery1(query) {
     const output = await fetchDataFromQuery(query);
     let rowCount = output['rows'].length;
     let data = [];
-
-    for (let entry = 0; entry < rowCount; entry++) {
-        let X = [];
-        let Y = [];
-        let rows = output['rows'][entry];
-        for (let i = 0; i < output['metaData'].length; i = i + 3) {
-            Y.push(rows[i + 1]);
-            X.push(rows[i + 2]);
-        }
-        data.push([X, Y]);
-    }
-
-    console.log("rowct: " + rowCount);
-    console.log("data: " + data);
-    
-    return {
-        "Data_Count": rowCount,
-        "Data": data
-    };
-}
-
-async function parseDataFromQuery1(query) {
-     const output = await fetchDataFromQuery(query);
-    let rowCount = output['rows'].length;
-    let data = [];
     let XC = [];
     let YC = [];
 
@@ -1212,13 +1187,11 @@ async function parseDataFromQuery1(query) {
     /*const output = await fetchDataFromQuery(query);
     let rowCount = output['rows'].length;
     let data = [];
-
     console.log("output:" + output);
     let crimeWeek = [];
     let crimePercent = [];
     let covidWeek = [];
     let covidPercent = [];
-
     let rows = output['rows'][0];
     for (let i = 1; i < output['metaData'].length/2; i++) {
         crimePercent.push(rows[i]);
@@ -1235,6 +1208,7 @@ async function parseDataFromQuery1(query) {
         "covidPercent": covidPercent
     };*/
 }
+
 
 async function parseCountFromQuery(query) { 
     const output = await fetchDataFromQuery(query);
