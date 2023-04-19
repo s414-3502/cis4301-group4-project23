@@ -8,6 +8,7 @@ const fs = require('fs');
 const oracledb = require("oracledb");
 const user = process.env.REACT_APP_USERNAME;
 const password = process.env.REACT_APP_PW;
+let covidStatusCheck = false;
 
 async function fetchDataFromQuery(query) {
     console.log("fetching connection")
@@ -31,219 +32,6 @@ async function fetchDataFromQuery(query) {
 
 var count = `SELECT COUNT(CRM_CD) FROM WGREGORY.LA_CRIME`
 
-//query 1 section:
-var q1 = `WITH tempCovid as 
-(SELECT DISTINCT c.DATES as dates,
-       CASE WHEN SUM(NVL(c.TOTAL_ADULT_PATIENTS_HOSPITALIZED_CONFIRMED_AND_SUSPECTED_COVID, 0) + NVL(c.TOTAL_PEDIATRIC_PATIENTS_HOSPITALIZED_CONFIRMED_COVID, 0)) > 0 
-       THEN SUM(NVL(c.TOTAL_ADULT_PATIENTS_HOSPITALIZED_CONFIRMED_AND_SUSPECTED_COVID, 0) + NVL(c.TOTAL_PEDIATRIC_PATIENTS_HOSPITALIZED_CONFIRMED_COVID, 0)) END case
-       FROM WGREGORY.COVID c
-       WHERE c.STATE = 'CA' AND ((dates >= '01-MAR-2020' AND dates <= '31-MAY-2020') OR
-           (dates >= '01-MAR-2021' AND dates <= '31-MAY-2021') OR
-           (dates >= '01-MAR-2022' AND dates <= '31-MAY-2022') OR
-           (dates >= '01-MAR-2023' AND dates <= '31-MAY-2023')) AND 
-           dates IS NOT NULL
-       GROUP BY c.DATES) 
-SELECT DISTINCT cg.CRIME_GROUP, 
-0 AS WEEK_1_PERCENTAGE_CHANGE, 
-NVL(((NVL(w2.WEEK_2_OCCURRENCE, 0) - NVL(w1.WEEK_1_OCCURRENCE, 0)) * 100.0 / NVL(w1.WEEK_1_OCCURRENCE, 1)), 0) AS WEEK_2_PERCENTAGE_CHANGE, 
-NVL(((NVL(w3.WEEK_3_OCCURRENCE, 0) - NVL(w2.WEEK_2_OCCURRENCE, 0)) * 100.0 / NVL(w2.WEEK_2_OCCURRENCE, 1)), 0) AS WEEK_3_PERCENTAGE_CHANGE, 
-NVL(((NVL(w4.WEEK_4_OCCURRENCE, 0) - NVL(w3.WEEK_3_OCCURRENCE, 0)) * 100.0 / NVL(w3.WEEK_3_OCCURRENCE, 1)), 0) AS WEEK_4_PERCENTAGE_CHANGE, 
-NVL(((NVL(w5.WEEK_5_OCCURRENCE, 0) - NVL(w4.WEEK_4_OCCURRENCE, 0)) * 100.0 / NVL(w4.WEEK_4_OCCURRENCE, 1)), 0) AS WEEK_5_PERCENTAGE_CHANGE, 
-NVL(((NVL(w6.WEEK_6_OCCURRENCE, 0) - NVL(w5.WEEK_5_OCCURRENCE, 0)) * 100.0 / NVL(w5.WEEK_5_OCCURRENCE, 1)), 0) AS WEEK_6_PERCENTAGE_CHANGE, 
-NVL(((NVL(w7.WEEK_7_OCCURRENCE, 0) - NVL(w6.WEEK_6_OCCURRENCE, 0)) * 100.0 / NVL(w6.WEEK_6_OCCURRENCE, 1)), 0) AS WEEK_7_PERCENTAGE_CHANGE, 
-NVL(((NVL(w8.WEEK_8_OCCURRENCE, 0) - NVL(w7.WEEK_7_OCCURRENCE, 0)) * 100.0 / NVL(w7.WEEK_7_OCCURRENCE, 1)), 0) AS WEEK_8_PERCENTAGE_CHANGE, 
-NVL(((NVL(w9.WEEK_9_OCCURRENCE, 0) - NVL(w8.WEEK_8_OCCURRENCE, 0)) * 100.0 / NVL(w8.WEEK_8_OCCURRENCE, 1)), 0) AS WEEK_9_PERCENTAGE_CHANGE, 
-NVL(((NVL(w10.WEEK_10_OCCURRENCE, 0) - NVL(w9.WEEK_9_OCCURRENCE, 0)) * 100.0 / NVL(w9.WEEK_9_OCCURRENCE, 1)), 0) AS WEEK_10_PERCENTAGE_CHANGE, 
-NVL(((NVL(w11.WEEK_11_OCCURRENCE, 0) - NVL(w10.WEEK_10_OCCURRENCE, 0)) * 100.0 / NVL(w10.WEEK_10_OCCURRENCE, 1)), 0) AS WEEK_11_PERCENTAGE_CHANGE, 
-NVL(((NVL(w12.WEEK_12_OCCURRENCE, 0) - NVL(w11.WEEK_11_OCCURRENCE, 0)) * 100.0 / NVL(w11.WEEK_11_OCCURRENCE, 1)), 0) AS WEEK_12_PERCENTAGE_CHANGE, 
-NVL(((NVL(w13.WEEK_13_OCCURRENCE, 0) - NVL(w12.WEEK_12_OCCURRENCE, 0)) * 100.0 / NVL(w12.WEEK_12_OCCURRENCE, 1)), 0) AS WEEK_13_PERCENTAGE_CHANGE,
-
---Lines below should be added to query only if you want COVID cases.
-0 AS WEEK_1_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c2.CASE, 0) - NVL(c1.CASE, 0)) * 100.0 / NVL(c1.CASE, 1)), 0) AS WEEK_2_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c3.CASE, 0) - NVL(c2.CASE, 0)) * 100.0 / NVL(c2.CASE, 1)), 0) AS WEEK_3_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c4.CASE, 0) - NVL(c3.CASE, 0)) * 100.0 / NVL(c3.CASE, 1)), 0) AS WEEK_4_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c5.CASE, 0) - NVL(c4.CASE, 0)) * 100.0 / NVL(c4.CASE, 1)), 0) AS WEEK_5_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c6.CASE, 0) - NVL(c5.CASE, 0)) * 100.0 / NVL(c5.CASE, 1)), 0) AS WEEK_6_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c7.CASE, 0) - NVL(c6.CASE, 0)) * 100.0 / NVL(c6.CASE, 1)), 0) AS WEEK_7_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c8.CASE, 0) - NVL(c7.CASE, 0)) * 100.0 / NVL(c7.CASE, 1)), 0) AS WEEK_8_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c9.CASE, 0) - NVL(c8.CASE, 0)) * 100.0 / NVL(c8.CASE, 1)), 0) AS WEEK_9_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c10.CASE, 0) - NVL(c9.CASE, 0)) * 100.0 / NVL(c9.CASE, 1)), 0) AS WEEK_10_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c11.CASE, 0) - NVL(c10.CASE, 0)) * 100.0 / NVL(c10.CASE, 1)), 0) AS WEEK_11_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c12.CASE, 0) - NVL(c11.CASE, 0)) * 100.0 / NVL(c11.CASE, 1)), 0) AS WEEK_12_COVID_PERCENTAGE_CHANGE, 
-NVL(((NVL(c13.CASE, 0) - NVL(c12.CASE, 0)) * 100.0 / NVL(c12.CASE, 1)), 0) AS WEEK_13_COVID_PERCENTAGE_CHANGE
-
-FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_1, COUNT(l.CRM_CD_DESC) AS WEEK_1_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 1
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w1 ON w1.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_2, COUNT(l.CRM_CD_DESC) AS WEEK_2_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 2 
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w2 ON w2.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_3, COUNT(l.CRM_CD_DESC) AS WEEK_3_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 3 
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w3 ON w3.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_4, COUNT(l.CRM_CD_DESC) AS WEEK_4_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 4
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w4 ON w4.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_5, COUNT(l.CRM_CD_DESC) AS WEEK_5_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 5
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w5 ON w5.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_6, COUNT(l.CRM_CD_DESC) AS WEEK_6_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 6
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w6 ON w6.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_7, COUNT(l.CRM_CD_DESC) AS WEEK_7_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 7
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w7 ON w7.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_8, COUNT(l.CRM_CD_DESC) AS WEEK_8_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 8
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w8 ON w8.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_9, COUNT(l.CRM_CD_DESC) AS WEEK_9_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 9
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w9 ON w9.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_10, COUNT(l.CRM_CD_DESC) AS WEEK_10_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 10
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w10 ON w10.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_11, COUNT(l.CRM_CD_DESC) AS WEEK_11_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 11
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w11 ON w11.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_12, COUNT(l.CRM_CD_DESC) AS WEEK_12_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 12
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w12 ON w12.CRIME_GROUP = cg.CRIME_GROUP
-       LEFT JOIN
-       (SELECT DISTINCT cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1 AS WEEK_13, COUNT(l.CRM_CD_DESC) AS WEEK_13_OCCURRENCE
-       FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC 
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1) = 13
-       GROUP BY cg.CRIME_GROUP, MOD(TO_NUMBER(TO_CHAR(TRUNC(l.DATE_RPTD, 'WW'), 'WW')), 13) + 1
-       ) w13 ON w13.CRIME_GROUP = cg.CRIME_GROUP,
-       
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_1, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 1 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c1,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_2, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 2 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c2,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_3, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 3 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c3,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_4, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 4 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c4,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_5, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 5 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c5,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_6, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 6 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c6,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_7, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 7 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c7,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_8, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 8 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c8,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_9, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 9 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c9,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_10, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 10 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c10,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_11, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 11 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c11,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_12, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 12 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c12,
-       (SELECT DISTINCT MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1 AS WEEK_13, AVG(case) AS CASE
-       FROM tempCovid
-       WHERE (MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1) = 13 
-       GROUP BY MOD(TO_NUMBER(TO_CHAR(TRUNC(dates, 'WW'), 'WW')), 13) + 1
-       ) c13
-   WHERE cg.CRIME_GROUP IS NOT NULL AND 
-           cg.CRIME_GROUP = 'CHILD ABUSE' AND 
-           ((l.DATE_RPTD >= '01-MAR-2010' AND l.DATE_RPTD <= '31-MAY-2010') OR
-           (l.DATE_RPTD >= '01-MAR-2011' AND l.DATE_RPTD <= '31-MAY-2011') OR
-           (l.DATE_RPTD >= '01-MAR-2012' AND l.DATE_RPTD <= '31-MAY-2012') OR
-           (l.DATE_RPTD >= '01-MAR-2013' AND l.DATE_RPTD <= '31-MAY-2013') OR
-           (l.DATE_RPTD >= '01-MAR-2014' AND l.DATE_RPTD <= '31-MAY-2014') OR
-           (l.DATE_RPTD >= '01-MAR-2015' AND l.DATE_RPTD <= '31-MAY-2015') OR
-           (l.DATE_RPTD >= '01-MAR-2016' AND l.DATE_RPTD <= '31-MAY-2016') OR
-           (l.DATE_RPTD >= '01-MAR-2017' AND l.DATE_RPTD <= '31-MAY-2017') OR
-           (l.DATE_RPTD >= '01-MAR-2018' AND l.DATE_RPTD <= '31-MAY-2018') OR
-           (l.DATE_RPTD >= '01-MAR-2019' AND l.DATE_RPTD <= '31-MAY-2019') OR
-           (l.DATE_RPTD >= '01-MAR-2020' AND l.DATE_RPTD <= '31-MAY-2020') OR
-           (l.DATE_RPTD >= '01-MAR-2021' AND l.DATE_RPTD <= '31-MAY-2021') OR
-           (l.DATE_RPTD >= '01-MAR-2022' AND l.DATE_RPTD <= '31-MAY-2022')) AND 
-           l.DATE_RPTD IS NOT NULL`
-
-//query 3 section:   
-var q3 = ``
-
-//query 4 section:
-var q4 = ``
-
-//query 5 section:
-var q5 = ``
-
 async function parseDataFromQuery(query) {
     const output = await fetchDataFromQuery(query);
     let rowCount = output['rows'].length;
@@ -259,12 +47,16 @@ async function parseDataFromQuery(query) {
         }
         data.push([X, Y]);
     }
+
+    console.log("rowct: " + rowCount);
+    console.log("data: " + data);
     
     return {
         "Data_Count": rowCount,
         "Data": data
     };
 }
+
 
 function generateQuery2(district, vehicleCrimeTypes) {
     // AND l.AREA = d4.AREA
@@ -773,23 +565,24 @@ function generateQuery1(covidStatus, season, crimeGroups) {
         seasonCrimeTypeQuery ="((l.DATE_RPTD >= '01-MAR-2010' AND l.DATE_RPTD <= '31-MAY-2010') OR (l.DATE_RPTD >= '01-MAR-2011' AND l.DATE_RPTD <= '31-MAY-2011') OR (l.DATE_RPTD >= '01-MAR-2012' AND l.DATE_RPTD <= '31-MAY-2012') OR (l.DATE_RPTD >= '01-MAR-2013' AND l.DATE_RPTD <= '31-MAY-2013') OR (l.DATE_RPTD >= '01-MAR-2014' AND l.DATE_RPTD <= '31-MAY-2014') OR (l.DATE_RPTD >= '01-MAR-2015' AND l.DATE_RPTD <= '31-MAY-2015') OR (l.DATE_RPTD >= '01-MAR-2016' AND l.DATE_RPTD <= '31-MAY-2016') OR (l.DATE_RPTD >= '01-MAR-2017' AND l.DATE_RPTD <= '31-MAY-2017') OR (l.DATE_RPTD >= '01-MAR-2018' AND l.DATE_RPTD <= '31-MAY-2018') OR (l.DATE_RPTD >= '01-MAR-2019' AND l.DATE_RPTD <= '31-MAY-2019') OR (l.DATE_RPTD >= '01-MAR-2020' AND l.DATE_RPTD <= '31-MAY-2020') OR (l.DATE_RPTD >= '01-MAR-2021' AND l.DATE_RPTD <= '31-MAY-2021') OR (l.DATE_RPTD >= '01-MAR-2022' AND l.DATE_RPTD <= '31-MAY-2022')) AND l.DATE_RPTD IS NOT NULL";
     }
     else if(season == 2){
-        seasonCovidTypeQuery = "((l.dates >= '01-JUN-2020' AND l.dates <= '31-AUG-2020') OR (l.dates >= '01-JUN-2021' AND l.dates <= '31-AUG-2021') OR (l.dates >= '01-JUN-2022' AND l.dates <= '31-AUG-2022')) AND l.dates IS NOT NULL";
+        seasonCovidTypeQuery = "((dates >= '01-JUN-2020' AND dates <= '31-AUG-2020') OR (dates >= '01-JUN-2021' AND dates <= '31-AUG-2021') OR (dates >= '01-JUN-2022' AND dates <= '31-AUG-2022')) AND dates IS NOT NULL";
         seasonCrimeTypeQuery ="((l.DATE_RPTD >= '01-JUN-2010' AND l.DATE_RPTD <= '31-AUG-2010') OR (l.DATE_RPTD >= '01-JUN-2011' AND l.DATE_RPTD <= '31-AUG-2011') OR (l.DATE_RPTD >= '01-JUN-2012' AND l.DATE_RPTD <= '31-AUG-2012') OR (l.DATE_RPTD >= '01-JUN-2013' AND l.DATE_RPTD <= '31-AUG-2013') OR (l.DATE_RPTD >= '01-JUN-2014' AND l.DATE_RPTD <= '31-AUG-2014') OR (l.DATE_RPTD >= '01-JUN-2015' AND l.DATE_RPTD <= '31-AUG-2015') OR (l.DATE_RPTD >= '01-JUN-2016' AND l.DATE_RPTD <= '31-AUG-2016') OR (l.DATE_RPTD >= '01-JUN-2017' AND l.DATE_RPTD <= '31-AUG-2017') OR (l.DATE_RPTD >= '01-JUN-2018' AND l.DATE_RPTD <= '31-AUG-2018') OR (l.DATE_RPTD >= '01-JUN-2019' AND l.DATE_RPTD <= '31-AUG-2019') OR (l.DATE_RPTD >= '01-JUN-2020' AND l.DATE_RPTD <= '31-AUG-2020') OR (l.DATE_RPTD >= '01-JUN-2021' AND l.DATE_RPTD <= '31-AUG-2021')) AND l.DATE_RPTD IS NOT NULL";
     }
     else if (season == 3){
-        seasonCovidTypeQuery = "(l.dates >= '01-SEP-2020' AND l.dates <= '31-NOV-2020') OR (l.dates >= '01-SEP-2021' AND l.dates <= '31-NOV-2021') OR (l.dates >= '01-SEP-2022' AND l.dates <= '31-NOV-2022')) AND l.dates IS NOT NULL";
+        seasonCovidTypeQuery = "(dates >= '01-SEP-2020' AND dates <= '31-NOV-2020') OR (dates >= '01-SEP-2021' AND dates <= '31-NOV-2021') OR (dates >= '01-SEP-2022' AND dates <= '31-NOV-2022')) AND dates IS NOT NULL";
         seasonCrimeTypeQuery ="((l.DATE_RPTD >= '01-SEP-2010' AND l.DATE_RPTD <= '31-NOV-2010') OR (l.DATE_RPTD >= '01-SEP-2011' AND l.DATE_RPTD <= '31-NOV-2011') OR (l.DATE_RPTD >= '01-SEP-2012' AND l.DATE_RPTD <= '31-NOV-2012') OR (l.DATE_RPTD >= '01-SEP-2013' AND l.DATE_RPTD <= '31-NOV-2013') OR (l.DATE_RPTD >= '01-SEP-2014' AND l.DATE_RPTD <= '31-NOV-2014') OR (l.DATE_RPTD >= '01-SEP-2015' AND l.DATE_RPTD <= '31-NOV-2015') OR (l.DATE_RPTD >= '01-SEP-2016' AND l.DATE_RPTD <= '31-NOV-2016') OR (l.DATE_RPTD >= '01-SEP-2017' AND l.DATE_RPTD <= '31-NOV-2017') OR (l.DATE_RPTD >= '01-SEP-2018' AND l.DATE_RPTD <= '31-NOV-2018') OR (l.DATE_RPTD >= '01-SEP-2019' AND l.DATE_RPTD <= '31-NOV-2019') OR (l.DATE_RPTD >= '01-SEP-2020' AND l.DATE_RPTD <= '31-NOV-2020') OR (l.DATE_RPTD >= '01-SEP-2021' AND l.DATE_RPTD <= '31-NOV-2021')) AND l.DATE_RPTD IS NOT NULL";
     }
     else{
-        seasonCovidTypeQuery = "((l.dates >= '01-JAN-2020' AND l.dates <= '28-FEB-2020') OR (l.dates >= '01-DEC-2020' AND l.dates <= '31-DEC-2020')) OR ((l.dates >= '01-JAN-2021' AND l.dates <= '28-FEB-2021') OR (l.dates >= '01-DEC-2021' AND l.dates <= '31-DEC-2021')) OR ((l.dates >= '01-JAN-2022' AND l.dates <= '28-FEB-2022')) OR (l.dates >= '01-DEC-2022' AND l.dates <= '31-DEC-2022')) OR ((l.dates >= '01-JAN-2023' AND l.dates <= '28-FEB-2023'))) AND l.dates IS NOT NULL";
+        seasonCovidTypeQuery = "((dates >= '01-JAN-2020' AND dates <= '28-FEB-2020') OR (dates >= '01-DEC-2020' AND dates <= '31-DEC-2020')) OR ((dates >= '01-JAN-2021' AND dates <= '28-FEB-2021') OR (dates >= '01-DEC-2021' AND dates <= '31-DEC-2021')) OR ((dates >= '01-JAN-2022' AND dates <= '28-FEB-2022') OR (dates >= '01-DEC-2022' AND dates <= '31-DEC-2022')) OR ((dates >= '01-JAN-2023' AND dates <= '28-FEB-2023')) AND dates IS NOT NULL";
         seasonCrimeTypeQuery ="(((l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '28-FEB-2010') OR (l.DATE_RPTD >= '01-DEC-2010' AND l.DATE_RPTD <= '31-DEC-2010')) OR ((l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '28-FEB-2011') OR (l.DATE_RPTD >= '01-DEC-2011' AND l.DATE_RPTD <= '31-DEC-2011')) OR ((l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '28-FEB-2012') OR (l.DATE_RPTD >= '01-DEC-2012' AND l.DATE_RPTD <= '31-DEC-2012')) OR ((l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '28-FEB-2013') OR (l.DATE_RPTD >= '01-DEC-2013' AND l.DATE_RPTD <= '31-DEC-2013')) OR ((l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '28-FEB-2014') OR (l.DATE_RPTD >= '01-DEC-2014' AND l.DATE_RPTD <= '31-DEC-2014')) OR ((l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '28-FEB-2015') OR (l.DATE_RPTD >= '01-DEC-2015' AND l.DATE_RPTD <= '31-DEC-2015')) OR ((l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '28-FEB-2016') OR (l.DATE_RPTD >= '01-DEC-2016' AND l.DATE_RPTD <= '31-DEC-2016')) OR ((l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '28-FEB-2017') OR (l.DATE_RPTD >= '01-DEC-2017' AND l.DATE_RPTD <= '31-DEC-2017')) OR ((l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '28-FEB-2018') OR (l.DATE_RPTD >= '01-DEC-2018' AND l.DATE_RPTD <= '31-DEC-2018')) OR ((l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '28-FEB-2019') OR (l.DATE_RPTD >= '01-DEC-2019' AND l.DATE_RPTD <= '31-DEC-2019')) OR ((l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '28-FEB-2020') OR (l.DATE_RPTD >= '01-DEC-2020' AND l.DATE_RPTD <= '31-DEC-2020')) OR ((l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '28-FEB-2021') OR (l.DATE_RPTD >= '01-DEC-2021' AND l.DATE_RPTD <= '31-DEC-2021')) OR ((l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '28-FEB-2022'))) AND l.DATE_RPTD IS NOT NULL";
     }
 
-    if(covidStatus = "yes"){
-        covidStatusQuery = "";
-    }
-    else{
+    if(covidStatus == 'Yes'){
         covidStatusQuery = ", 0 AS WEEK_1_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c2.CASE, 0) - NVL(c1.CASE, 0)) * 100.0 / NVL(c1.CASE, 1)), 0) AS WEEK_2_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c3.CASE, 0) - NVL(c2.CASE, 0)) * 100.0 / NVL(c2.CASE, 1)), 0) AS WEEK_3_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c4.CASE, 0) - NVL(c3.CASE, 0)) * 100.0 / NVL(c3.CASE, 1)), 0) AS WEEK_4_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c5.CASE, 0) - NVL(c4.CASE, 0)) * 100.0 / NVL(c4.CASE, 1)), 0) AS WEEK_5_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c6.CASE, 0) - NVL(c5.CASE, 0)) * 100.0 / NVL(c5.CASE, 1)), 0) AS WEEK_6_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c7.CASE, 0) - NVL(c6.CASE, 0)) * 100.0 / NVL(c6.CASE, 1)), 0) AS WEEK_7_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c8.CASE, 0) - NVL(c7.CASE, 0)) * 100.0 / NVL(c7.CASE, 1)), 0) AS WEEK_8_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c9.CASE, 0) - NVL(c8.CASE, 0)) * 100.0 / NVL(c8.CASE, 1)), 0) AS WEEK_9_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c10.CASE, 0) - NVL(c9.CASE, 0)) * 100.0 / NVL(c9.CASE, 1)), 0) AS WEEK_10_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c11.CASE, 0) - NVL(c10.CASE, 0)) * 100.0 / NVL(c10.CASE, 1)), 0) AS WEEK_11_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c12.CASE, 0) - NVL(c11.CASE, 0)) * 100.0 / NVL(c11.CASE, 1)), 0) AS WEEK_12_COVID_PERCENTAGE_CHANGE, NVL(((NVL(c13.CASE, 0) - NVL(c12.CASE, 0)) * 100.0 / NVL(c12.CASE, 1)), 0) AS WEEK_13_COVID_PERCENTAGE_CHANGE";
+        covidStatusCheck = true;
+    }
+    if(covidStatus == 'No'){
+        covidStatusQuery = "";
     }
 
     let query_1 = `WITH tempCovid as 
@@ -971,9 +764,95 @@ function generateQuery1(covidStatus, season, crimeGroups) {
     return query_1
 }
 
-async function parseDataFromQuery1(query) {
+async function parseDataFromQuery(query) {
     const output = await fetchDataFromQuery(query);
-    console.log(output);
+    let rowCount = output['rows'].length;
+    let data = [];
+
+    for (let entry = 0; entry < rowCount; entry++) {
+        let X = [];
+        let Y = [];
+        let rows = output['rows'][entry];
+        for (let i = 0; i < output['metaData'].length; i = i + 3) {
+            Y.push(rows[i + 1]);
+            X.push(rows[i + 2]);
+        }
+        data.push([X, Y]);
+    }
+
+    console.log("rowct: " + rowCount);
+    console.log("data: " + data);
+    
+    return {
+        "Data_Count": rowCount,
+        "Data": data
+    };
+}
+
+async function parseDataFromQuery1(query) {
+     const output = await fetchDataFromQuery(query);
+    let rowCount = output['rows'].length;
+    let data = [];
+    let XC = [];
+    let YC = [];
+
+    if(covidStatusCheck){
+        console.log(rowCount);
+        console.log(output['metaData'].length);
+    }
+    for (let entry = 0; entry < rowCount; entry++) {
+        let X1 = [];
+        let Y1 = [];
+        let X = [];
+        let Y = [];
+        let rows = output['rows'][entry];
+        if(covidStatusCheck){
+            for (let i = 1; i < 14; i++) {
+                Y1.push(rows[i]);
+                X1.push(i);
+            }
+            data.push([X1, Y1]);
+            console.log("X1: " + X1);
+            console.log("Y1: " + Y1);
+        }
+        else{
+            for (let i = 1; i < output['metaData'].length; i++) {
+                Y.push(rows[i]);
+                X.push(i % 7);
+            }
+            data.push([X, Y]);
+            console.log("X: " + X);
+            console.log("Y: " + Y);
+        }
+    }
+
+    let entry = 0;
+    let rows = output['rows'][entry];
+    if(covidStatusCheck){
+        for (let i = 14; i < output['metaData'].length; i++) {
+            YC.push(rows[i]);
+            XC.push(i - 13);
+        }
+        data.push([XC, YC]);
+
+        console.log("XC: " + XC);
+        console.log("YC: " + YC);
+        console.log("in covid check");
+    }
+
+    console.log("rowct: " + rowCount);
+    console.log("data: " + data);
+    
+    
+    return {
+        "Data_Count": rowCount,
+        "Data": data
+    };
+    /*const output = await fetchDataFromQuery(query);
+    let rowCount = output['rows'].length;
+    let data = [];
+
+    console.log("output:" + output);
     let crimeWeek = [];
     let crimePercent = [];
     let covidWeek = [];
@@ -993,7 +872,7 @@ async function parseDataFromQuery1(query) {
         "crimePercent": crimePercent,
         "covidWeek": covidWeek,
         "covidPercent": covidPercent
-    };
+    };*/
 }
 
 async function parseCountFromQuery(query) { 
@@ -1023,7 +902,7 @@ app.get('/query_1_data', function (req, res) {
     }
 
     else {
-        parseDataFromQuery(generateQuery1(req.query.covidStatus, req.query.season, req.query.crimeGroups)).then((output) => {
+        parseDataFromQuery1(generateQuery1(req.query.covidStatus, req.query.season, req.query.crimeGroups)).then((output) => {
             res.end(JSON.stringify(output))        
         })
     }
