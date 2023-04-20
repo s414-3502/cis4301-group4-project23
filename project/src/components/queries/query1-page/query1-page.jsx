@@ -291,7 +291,7 @@ function Template() {
   };
 
   
-  var dataset= [covidBar, covidScatter, crimeBar1, crimeScatter1, crimeBar2, crimeScatter2, crimeBar3, crimeScatter3];
+    var dataset= [covidBar, covidScatter, crimeBar1, crimeScatter1, crimeBar2, crimeScatter2, crimeBar3, crimeScatter3];
 
 
   return (
@@ -310,6 +310,8 @@ function Template() {
               <Plot
                   data={dataset}
                   layout={layout}
+
+
                 />
               </Box>
               <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
