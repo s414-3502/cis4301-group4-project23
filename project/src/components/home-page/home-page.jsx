@@ -67,7 +67,7 @@ function Template() {
               <h1>Los Angeles Crime Data</h1>
               <Typography sx={{mt: 2, fontWeight: 'bold'}}>Visualizations and Analysis</Typography>
               <p>A user-friendly web application that focuses specifically on filtering and answering 
-                serious queries about crime in Los Angeles through local crime data from 2017-2022, along with  
+                serious queries about crime in Los Angeles through local crime data from 2010-2022, along with  
                 COVID data in  relatively the same area.  
               </p>
             </Item>

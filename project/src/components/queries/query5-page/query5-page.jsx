@@ -126,7 +126,7 @@ function Template() {
         <h1>{dataLoading ? "loading..." : "Likelihood of Crime being Reported within 30 days"}</h1>
         <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
           <Typography sx={{color:"#484273", fontSize: 13,}}>
-            Crime reporting patterns on often crimes are reported after 
+            Crime reporting patterns on how often crimes are reported after 
             30 days versus within 30 days
           </Typography>
         </Divider>

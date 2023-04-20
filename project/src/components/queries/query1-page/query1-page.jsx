@@ -302,7 +302,7 @@ function Template() {
         <Divider sx={{mb: 1.5, mt: 3, "&::before, &::after": {borderColor: "#7c76a3",}, }}>
           <Typography sx={{color:"#484273", fontSize: 13,}}>
             An overview of crime trends across the four seasons (Spring, Summer, Fall, and Winter) in L.A.
-            (averaged from 2017 to 2022 with COVID-19 consideration)
+            (averaged from 2010 to 2022 with COVID-19 consideration)
             </Typography>
         </Divider>
           <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
