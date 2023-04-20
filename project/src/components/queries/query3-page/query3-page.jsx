@@ -48,6 +48,8 @@ function Template() {
     ["Female", "F"],
     ["Other", "X"],
   ];
+  let col = 1;
+  let dataIndex = 0;
 
   const descentOptions = [
     "Other Asian: A",
@@ -94,6 +96,7 @@ function Template() {
 
 
   const handleSave = () => {
+    setDataLoading(true);
     console.log("Selected Sex: ", sexOptions[sex][1]);
     console.log("Selected Descents: ", descent);
     console.log("Selected Age Range: ", ageRange);
@@ -103,55 +106,77 @@ function Template() {
       ageStart: ageRange[0],
       ageEnd: ageRange[1],
     })
-
-    // let countTotalSelected = 0;
-    // let selectedValues = "";
-    // toggleValues.forEach((value, index) => {
-    //   if (value) {
-    //     countTotalSelected++;
-    //     selectedValues += descentOptions[index] + "#";
-    //   }
-    // })
-    // if (countTotalSelected == 0 || countTotalSelected > 5) {
-    //   console.log("Error");
-    // }
-    // else {
-    //   console.log("passed")
-    //   setX([]);
-    //   setY([]);
-    //   console.log(selectedValues);
-    //   setGraphParams({
-    //     sex,
-    //     descentOptions: selectedValues
-    //   })
-    //   setDataLoading(true);
-    // }
   }
 
+  function scatterColor(){
+    if(col == 1){
+      col += 1;
+      return 'purple';
+    }
+    else if(col == 2){
+      col += 1;
+      return 'orange';
+    }
+    else{
+      col = 1;
+    }
+    return 'blue';
+  }
+
+  function scatterName(){
+    let crimeGroup = []
+    data["Data"].forEach(element => {
+      console.log(element[2][0])
+      crimeGroup.push(element[2][0])
+      
+    });
+    let outVal = crimeGroup[dataIndex];
+    if(dataIndex < 5){
+      dataIndex += 1;
+    }
+    else{
+      dataIndex = 0;
+    }
+    return outVal;
+  }
 
   return (
     <div className="query-3-page">
       <Box sx={{ flexGrow: 1, height: 1000 }}>
-        <h1>Victim Profiling Based on Demographic Factors</h1>
+        <h1>
+        {dataLoading ? "loading..." : "Victim Profiling Based on Demographic Factors"}</h1>
         <Divider sx={{ mb: 1.5, mt: 3, "&::before, &::after": { borderColor: "#7c76a3", }, }}>
           <Typography sx={{ color: "#484273", fontSize: 13, }}>
             Common crimes committed  in L.A. based on age, sex and descent.
           </Typography>
         </Divider>
-        <Box sx={{ display: 'flex', m: 8, mt: 0, height: '65%' }}>
-          <Box sx={{ width: '80%', border: 1, borderColor: 'gray', borderRadius: 3 }}>
+        <Box sx={{ display: 'flex',justifyContent: 'space-between', m: 8, mt: 0, m1:1, height: '65%' }}>
+          <Box sx={{ height: 600, border: 1, borderColor: 'gray', borderRadius: 3, p:0 }}>
             <Plot
+              sx = {{m:0}}
                data={graphData.map((entry) => {
                 return {
+                  name: scatterName(),
                   x: entry[0],
                   y: entry[1],
                   type: 'scatter',
                   mode: 'lines+markers',
-                  marker: {color: 'purple'},
+                  marker: {color: scatterColor()},
+                  line:{
+                    dash: 'dot'
+                  }
                 }
               })}
-              layout={{ width: 1200, height: 600 }}
-            />
+              layout={{xaxis:{
+                title: "Year"
+              },
+              yaxis:{
+                title: "Ratio By Total Crimes"
+              }, width: 1000, height: 500, showlegend: true,
+              legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 1 }}}/>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', mr: -3, ml: 1, }}>
             <h5>DATA FILTERS</h5>
@@ -217,9 +242,11 @@ function Template() {
                     disableSwap
                   />
                 </FormGroup>
-                <Button variant="contained" onClick={() => {
-                  handleSave()
-                }}>Save</Button>
+                <Button
+                  sx={{m:1, backgroundColor:"#95799c", width: '60%', alignSelf:'center'}}
+                  variant="contained" 
+                  onClick={() => {handleSave()}}>Save
+            </Button>
               </FormControl>
               <br />
               <i>Upper and lower bound</i>
