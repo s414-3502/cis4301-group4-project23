@@ -30,7 +30,7 @@ async function fetchDataFromQuery(query) {
   console.log("Hello!")    
 }
 
-var count = `SELECT COUNT(CRM_CD) FROM WGREGORY.LA_CRIME`
+var count = `SELECT COUNT(CRM_CD) FROM WGREGORY.LA_CRIMES`
 
 async function parseDataFromQuery(query) {
     const output = await fetchDataFromQuery(query);
