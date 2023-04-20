@@ -27,6 +27,8 @@ function Template() {
     district: '',
     vehicleCrimeTypes: '',
   });
+  let col = 1;
+  let dataIndex = 0;
 
   const vehicleCrimeTypesNames = [ 'DRIVING WITHOUT OWNER CONSENT (DWOC)',
   'GRAND THEFT / AUTO REPAIR',
@@ -56,9 +58,6 @@ function Template() {
 
   const { isLoading, error, data } = useQuery(["query2Data", graphParams.district, graphParams.vehicleCrimeTypes], fetchQuery2Data);
   
-  const validateInput = () => {
-    
-  }
 
   useEffect(() => {
     if (data !== undefined) {
@@ -91,6 +90,34 @@ function Template() {
     }
   }
 
+  function scatterColor(){
+    if(col == 1){
+      col += 1;
+      return 'purple';
+    }
+    else if(col == 2){
+      col += 1;
+      return 'orange';
+    }
+    else{
+      col = 1;
+    }
+    return 'blue';
+  }
+
+  function scatterName(){
+    let vehicleCrime = graphParams.vehicleCrimeTypes.split('#');
+    let outVal = vehicleCrime[dataIndex];
+    if(dataIndex < 3){
+      dataIndex += 1;
+    }
+    else{
+      dataIndex = 0;
+    }
+    return outVal;
+  }
+
+
   return (
     <div className="query-2-page">
       <Box sx={{ flexGrow: 1,  height: 1000}}>
@@ -102,22 +129,27 @@ function Template() {
           See how safe a specific area might be for different modes of transportation
           </Typography>
         </Divider>
-        <Box sx={{display: 'flex', m:8, mt:0, height:'65%'}}>
-          <Box sx={{width: '80%', border: 1, borderColor: 'gray', borderRadius:3}}>
+        <Box sx={{display: 'flex', justifyContent: 'space-between', m:8, mt:0, m1:1, height:'65%'}}>
+          <Box sx={{height: 600, border: 1, borderColor: 'gray', borderRadius:3, p:0}}>
             <Plot
+              sx={{m:0}}
               data={graphData.map((entry) => {
                 return {
+                  name: scatterName(),
                   x: entry[0],
                   y: entry[1],
                   type: 'scatter',
                   mode: 'lines+markers',
-                  marker: {color: 'purple'},
+                  marker: {color: scatterColor()},
+                  line:{
+                    dash: 'dot'
+                  }
                 }
               })}
-              layout={ {width: 1200, height: 600} }
+              layout={ {xaxis:{title: "Year"}, yaxis:{title: "Percentage"}, width: 1000, height: 500, showlegend: true, legend: { x:1, xanchor: "right", y:1}}}
               />
           </Box>
-          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1,}}>
+          <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1, mt:-5}}>
             <h5>DATA FILTERS</h5>
             <p class="hint">select a district and a vehicle crime type</p>
             <Box sx={{alignSelf:'center', backgroundColor: '#EAE6EB', borderRadius:2, px:3, py:1, mb:1, width:'70%'}}>
@@ -153,15 +185,17 @@ function Template() {
                         temp[index] = event.target.checked;
                         setToggleValues(temp)
                         console.log(toggleValues);
-                      }} />} label={<Typography sx={{ fontSize: 14, }}>{name}</Typography>} />
+                      }} />} label={<Box sx = {{paddingBottom: 0.5}}><Typography align = "left" sx={{ fontSize: 12, }}>{name}</Typography></Box>} />
                     })
                   }
                 </FormGroup>
                 <i>*See Data Page for Crime Types</i>
                 <i>**includes (but not limited to: motor vehicles, motorized scooters, bicycles, wheelchairs, etc.)</i>
-                <Button variant="contained" onClick={() => {
-                  handleSave()
-                }}>Save</Button>
+                <Button
+                  sx={{m:1, backgroundColor:"#95799c", width: '60%', alignSelf:'center'}}
+                  variant="contained" 
+                  onClick={() => {handleSave()}}>Save
+            </Button>
               </FormControl>
             </Box>
           </Box> 
