@@ -365,9 +365,11 @@ function Template() {
                     }
                   </FormGroup>
                   <i>*See data page for Crime Groupings</i>
-                  <Button variant="contained" onClick={() => {
-                  handleSave()
-                }}>Save</Button>
+                  <Button
+                  sx={{m:1, backgroundColor:"#95799c", width: '60%', alignSelf:'center'}}
+                  variant="contained" 
+                  onClick={() => {handleSave()}}>Save
+            </Button>
                 </FormControl>
               </Box>
             </Box> 
