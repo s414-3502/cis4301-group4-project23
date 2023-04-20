@@ -186,12 +186,12 @@ function Template() {
               }, width: 1000, height: 500, showlegend: true,
               legend: {
                 x: 1,
-                xanchor: 'right',
+                xanchor: 'left',
                 y: 1 }}}/>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', mr: -3, ml: 1, }}>
             <h5>DATA FILTERS</h5>
-            <p class="hint">select sex, one or more racial descents, and an age range</p>
+            <p class="hint">select sex, one racial descent, and an age range</p>
             <Box sx={{ alignSelf: 'center', backgroundColor: '#EAE6EB', borderRadius: 2, px: 3, py: 1, mb: 1, width: '70%' }}>
               <FormControl fullWidth>
                 <Divider sx={{ mb: 1, "&::before, &::after": { borderColor: "#7c76a3", }, }}>

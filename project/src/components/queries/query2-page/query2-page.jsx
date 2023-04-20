@@ -99,6 +99,14 @@ function Template() {
       col += 1;
       return 'orange';
     }
+    else if(col == 3){
+      col += 1;
+      return 'red';
+    }
+    else if(col == 4){
+      col += 1;
+      return 'green';
+    }
     else{
       col = 1;
     }
@@ -146,7 +154,7 @@ function Template() {
                   }
                 }
               })}
-              layout={ {xaxis:{title: "Year"}, yaxis:{title: "Percentage"}, width: 1000, height: 500, showlegend: true, legend: { x:1, xanchor: "right", y:1}}}
+              layout={ {xaxis:{title: "Year"}, yaxis:{title: "Percentage"}, width: 1000, height: 500, showlegend: true, legend: { x:1, xanchor: "left", y:1}}}
               />
           </Box>
           <Box sx={{display: 'flex', flexDirection:'column', mr:-3, ml:1, mt:-5}}>

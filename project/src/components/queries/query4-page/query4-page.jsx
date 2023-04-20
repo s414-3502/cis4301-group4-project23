@@ -156,7 +156,7 @@ function Template() {
                   showlegend: true,
                   legend: {
                     x: 1,
-                    xanchor: 'right',
+                    xanchor: 'left',
                     y: 1
                   }
                 } }
