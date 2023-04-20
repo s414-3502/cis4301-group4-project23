@@ -1,159 +1,738 @@
---Query 5      
-    SELECT DISTINCT ((w10.OCCURRENCE / (w10.OCCURRENCE + a10.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2010, ((a10.OCCURRENCE / (w10.OCCURRENCE + a10.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2010, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2010')) AS YEAR_2010, ((w11.OCCURRENCE / (w11.OCCURRENCE + a11.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2011, ((a11.OCCURRENCE / (w11.OCCURRENCE + a11.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2011, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2011')) AS YEAR_2011, ((w12.OCCURRENCE / (w12.OCCURRENCE + a12.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2012, ((a12.OCCURRENCE / (w12.OCCURRENCE + a12.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2012, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2012')) AS YEAR_2012, ((w13.OCCURRENCE / (w13.OCCURRENCE + a13.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2013, ((a13.OCCURRENCE / (w13.OCCURRENCE + a13.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2013, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2013')) AS YEAR_2013, ((w14.OCCURRENCE / (w14.OCCURRENCE + a14.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2014, ((a14.OCCURRENCE / (w14.OCCURRENCE + a14.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2014, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2014')) AS YEAR_2014, ((w15.OCCURRENCE / (w15.OCCURRENCE + a15.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2015, ((a15.OCCURRENCE / (w15.OCCURRENCE + a15.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2015, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2015')) AS YEAR_2015, ((w16.OCCURRENCE / (w16.OCCURRENCE + a16.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2016, ((a16.OCCURRENCE / (w16.OCCURRENCE + a16.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2016, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2016')) AS YEAR_2016, ((w17.OCCURRENCE / (w17.OCCURRENCE + a17.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2017, ((a17.OCCURRENCE / (w17.OCCURRENCE + a17.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2017, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2017')) AS YEAR_2017, ((w18.OCCURRENCE / (w18.OCCURRENCE + a18.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2018, ((a18.OCCURRENCE / (w18.OCCURRENCE + a18.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2018, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2018')) AS YEAR_2018, ((w19.OCCURRENCE / (w19.OCCURRENCE + a19.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2019, ((a19.OCCURRENCE / (w19.OCCURRENCE + a19.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2019, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2019')) AS YEAR_2019, ((w20.OCCURRENCE / (w20.OCCURRENCE + a20.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2020, ((a20.OCCURRENCE / (w20.OCCURRENCE + a20.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2020, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2020')) AS YEAR_2020, ((w21.OCCURRENCE / (w21.OCCURRENCE + a21.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2021, ((a21.OCCURRENCE / (w21.OCCURRENCE + a21.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2021, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2021')) AS YEAR_2021, ((w22.OCCURRENCE / (w22.OCCURRENCE + a22.OCCURRENCE)) * 100) AS PERCENTAGE_WITHIN_30_DAYS_2022, ((a22.OCCURRENCE / (w22.OCCURRENCE + a22.OCCURRENCE)) * 100) AS PERCENTAGE_AFTER_30_DAYS_2022, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2022')) AS YEAR_2022
-    FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+--Query 3
+    WITH CRIME_COUNT AS
+        (SELECT DISTINCT r.MOST_COMMON_CRIME, r.RATIO_RANGE
+        FROM WGREGORY.LA_CRIMES l,
+            (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIME, MAX(c.OCCURRENCE / s.SUMMATION) AS RATIO_RANGE
+            FROM WGREGORY.LA_CRIMES l,
+                (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+                FROM 
+                    (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                    FROM WGREGORY.LA_CRIMES l
+                    WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
+                    GROUP BY l.CRM_CD_DESC
+                    ) c
+                ) s,
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
+                --Filter for Sex here
+                AND l.VICT_SEX = 'M'
+    --            AND l.VICT_SEX = 'M'
+                --AND l.VICT_SEX = 'F'
+                --AND l.VICT_SEX = 'X'
+                
+                --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+                AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+    --            AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            WHERE l.CRM_CD_DESC = c.CRIME AND l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
+            GROUP BY c.CRIME
+            ORDER BY RATIO_RANGE DESC
+            FETCH FIRST 5 ROWS ONLY
+            ) r
+        WHERE l.CRM_CD_DESC = r.MOST_COMMON_CRIME
+        )
+    SELECT DISTINCT r10.MOST_COMMON_CRIMES_2010, NVL(r10.RATIO_2010, 0) AS RATIO_2010, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2010')) AS YEAR_2010, r11.MOST_COMMON_CRIMES_2011, NVL(r11.RATIO_2011, 0) AS RATIO_2011, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2011')) AS YEAR_2011, r12.MOST_COMMON_CRIMES_2012, NVL(r12.RATIO_2012, 0) AS RATIO_2012, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2012')) AS YEAR_2012,  r13.MOST_COMMON_CRIMES_2013, NVL(r13.RATIO_2013, 0) AS RATIO_2013, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2013')) AS YEAR_2013, r14.MOST_COMMON_CRIMES_2014, NVL(r14.RATIO_2014, 0) AS RATIO_2014, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2014')) AS YEAR_2014, r15.MOST_COMMON_CRIMES_2015, NVL(r15.RATIO_2015, 0) AS RATIO_2015, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2015')) AS YEAR_2015, r16.MOST_COMMON_CRIMES_2016, NVL(r16.RATIO_2016, 0) AS RATIO_2016, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2016')) AS YEAR_2016, r17.MOST_COMMON_CRIMES_2017, NVL(r17.RATIO_2017, 0) AS RATIO_2017, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2017')) AS YEAR_2017, r18.MOST_COMMON_CRIMES_2018, NVL(r18.RATIO_2018, 0) AS RATIO_2018, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2018')) AS YEAR_2018, r19.MOST_COMMON_CRIMES_2019, NVL(r19.RATIO_2019, 0) AS RATIO_2019, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2019')) AS YEAR_2019, r20.MOST_COMMON_CRIMES_2020, NVL(r20.RATIO_2020, 0) AS RATIO_2020, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2020')) AS YEAR_2020, r21.MOST_COMMON_CRIMES_2021, NVL(r21.RATIO_2021, 0) AS RATIO_2021, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2021')) AS YEAR_2021, r22.MOST_COMMON_CRIMES_2022, NVL(r22.RATIO_2022, 0) AS RATIO_2022, EXTRACT(YEAR FROM TO_DATE ('01-JAN-2022')) AS YEAR_2022
+    FROM WGREGORY.CRIME_COUNT cc FULL JOIN WGREGORY.LA_CRIMES l ON l.CRM_CD_DESC = cc.MOST_COMMON_CRIME
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2010, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2010
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2010' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2010' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w10,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2010' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a10,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-           AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w11,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a11,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+            
+            --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+            AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --        AND l.VICT_AGE >= 18
+            --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2010' AND l.DATE_RPTD <= '31-DEC-2010' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2010 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r10 ON l.CRM_CD_DESC = r10.MOST_COMMON_CRIMES_2010
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2011, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2011
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
+            WHERE l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL 
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2011' AND l.DATE_RPTD <= '31-DEC-2011' AND l.DATE_RPTD IS NOT NULL
+        AND l.VICT_SEX = 'M'
+        ORDER BY RATIO_2011 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r11 ON l.CRM_CD_DESC = r11.MOST_COMMON_CRIMES_2011
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2012, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2012
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w12,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a12,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2012' AND l.DATE_RPTD <= '31-DEC-2012' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2012 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r12 ON l.CRM_CD_DESC = r12.MOST_COMMON_CRIMES_2012
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2013, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2013
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w13,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a13,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2013' AND l.DATE_RPTD <= '31-DEC-2013' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2013 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r13 ON l.CRM_CD_DESC = r13.MOST_COMMON_CRIMES_2013
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2014, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2014
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w14,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a14,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2014' AND l.DATE_RPTD <= '31-DEC-2014' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2014 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r14 ON l.CRM_CD_DESC = r14.MOST_COMMON_CRIMES_2014
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2015, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2015
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w15,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a15,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2015' AND l.DATE_RPTD <= '31-DEC-2015' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2015 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r15 ON l.CRM_CD_DESC = r15.MOST_COMMON_CRIMES_2015
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2016, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2016
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w16,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a16,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2016' AND l.DATE_RPTD <= '31-DEC-2016' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2016 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r16 ON l.CRM_CD_DESC = r16.MOST_COMMON_CRIMES_2016
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2017, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2017
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w17,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a17,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2017' AND l.DATE_RPTD <= '31-DEC-2017' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2017 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r17 ON l.CRM_CD_DESC = r17.MOST_COMMON_CRIMES_2017
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2018, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2018
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w18,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a18,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2018' AND l.DATE_RPTD <= '31-DEC-2018' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2018 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r18 ON l.CRM_CD_DESC = r18.MOST_COMMON_CRIMES_2018
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2019, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2019
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w19,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a19,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2019' AND l.DATE_RPTD <= '31-DEC-2019' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2019 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r19 ON l.CRM_CD_DESC = r19.MOST_COMMON_CRIMES_2019
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2020, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2020
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w20,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a20,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2020' AND l.DATE_RPTD <= '31-DEC-2020' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2020 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r20 ON l.CRM_CD_DESC = r20.MOST_COMMON_CRIMES_2020
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2021, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2021
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w21,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a21,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2021' AND l.DATE_RPTD <= '31-DEC-2021' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2021 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r21 ON l.CRM_CD_DESC = r21.MOST_COMMON_CRIMES_2021
+    FULL JOIN
+        (SELECT DISTINCT c.CRIME AS MOST_COMMON_CRIMES_2022, (c.OCCURRENCE / s.SUMMATION) AS RATIO_2022
+        FROM WGREGORY.LA_CRIMES l, WGREGORY.CRIME_COUNT cc,
+            (SELECT DISTINCT SUM(c.OCCURRENCE) AS SUMMATION
+            FROM 
+                (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+                FROM WGREGORY.LA_CRIMES l
+                WHERE l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
+                GROUP BY l.CRM_CD_DESC
+                ) c
+            ) s,
+            (SELECT DISTINCT l.CRM_CD_DESC AS CRIME, COUNT(l.CRM_CD_DESC) AS OCCURRENCE
+            FROM WGREGORY.LA_CRIMES l
             WHERE l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) <= 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) w22,
-            (SELECT DISTINCT COUNT(l.CRM_CD_DESC) AS OCCURRENCE
-            FROM WGREGORY.LA_CRIMES l LEFT JOIN WGREGORY.CRIME_TYPE ct ON l.CRM_CD_DESC = ct.CRM_CD_DESC LEFT JOIN WGREGORY.CRIME_GROUPINGS cg ON l.CRM_CD_DESC = cg.CRM_CD_DESC
-            WHERE l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
-            AND (l.DATE_RPTD - l.DATE_OCC) > 30
-            AND cg.CRIME_GROUP = 'MINOR CRIMES' OR cg.CRIME_GROUP = 'BURGLARIES, THEFT AND PROPERTY CRIMES' OR cg.CRIME_GROUP = 'SEXUAL CRIMES'
-            ) a22
+            --Filter for Sex here
+            AND l.VICT_SEX = 'M'
+    --        AND l.VICT_SEX = 'M'
+            --AND l.VICT_SEX = 'F'
+            --AND l.VICT_SEX = 'X'
+            
+            --Filter for Descent here (Place ( after AND, then OR l.VICT_DESCENT = '' after AND ( l.VICT_DESCENT = '' to account for combinations Then end line with ).
+            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'X'
+    --            AND l.VICT_DESCENT = 'B'
+                --AND l.VICT_DESCENT = 'F'
+                --AND l.VICT_DESCENT = 'V'
+                --AND l.VICT_DESCENT = 'O'
+                --AND l.VICT_DESCENT = 'K'
+                --AND l.VICT_DESCENT = 'H'
+    --            AND l.VICT_DESCENT = 'W'
+                --AND l.VICT_DESCENT = 'C'
+                --AND l.VICT_DESCENT = 'U'
+                --AND l.VICT_DESCENT = 'I'
+                --AND l.VICT_DESCENT = 'A'
+                --AND l.VICT_DESCENT = 'P'
+                --AND l.VICT_DESCENT = 'J'
+                --AND l.VICT_DESCENT = 'Z'
+                --AND l.VICT_DESCENT = 'D'
+                --AND l.VICT_DESCENT = 'G'
+                --AND l.VICT_DESCENT = 'L'
+                --AND l.VICT_DESCENT = 'S'
+                
+                --Filter for Age. (I assume the slider will be used to shift the numbers used here)
+                AND l.VICT_AGE >= 20 AND l.VICT_AGE <= 50
+    --            AND l.VICT_AGE >= 18
+                --AND l.VICT_AGE <= 99
+            GROUP BY l.CRM_CD_DESC
+            ) c
+        WHERE c.CRIME = cc.MOST_COMMON_CRIME AND l.DATE_RPTD >= '01-JAN-2022' AND l.DATE_RPTD <= '31-DEC-2022' AND l.DATE_RPTD IS NOT NULL
+        ORDER BY RATIO_2022 DESC
+        FETCH FIRST 5 ROWS ONLY
+        ) r22 ON l.CRM_CD_DESC = r22.MOST_COMMON_CRIMES_2022
+    WHERE r10.MOST_COMMON_CRIMES_2010 IS NOT NULL AND r11.MOST_COMMON_CRIMES_2011 IS NOT NULL AND r12.MOST_COMMON_CRIMES_2012 IS NOT NULL AND r13.MOST_COMMON_CRIMES_2013 IS NOT NULL AND r14.MOST_COMMON_CRIMES_2014 IS NOT NULL AND r15.MOST_COMMON_CRIMES_2015 IS NOT NULL AND r16.MOST_COMMON_CRIMES_2016 IS NOT NULL AND r17.MOST_COMMON_CRIMES_2017 IS NOT NULL AND r18.MOST_COMMON_CRIMES_2018 IS NOT NULL AND r19.MOST_COMMON_CRIMES_2019 IS NOT NULL  

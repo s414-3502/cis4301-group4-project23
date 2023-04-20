@@ -117,6 +117,14 @@ function Template() {
       col += 1;
       return 'orange';
     }
+    else if(col == 3){
+      col += 1;
+      return 'red';
+    }
+    else if(col == 4){
+      col += 1;
+      return 'green';
+    }
     else{
       col = 1;
     }
