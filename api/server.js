@@ -15,8 +15,8 @@ async function fetchDataFromQuery(query) {
   try {
     let connection = await oracledb.getConnection(
       {
-        user: "ananya.agrawal",
-        password: "ZmvvaFGzJyksdMiwCk2bItDc",
+        user: "",
+        password: "",
         connectionString: "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = oracle.cise.ufl.edu)(PORT = 1521))(CONNECT_DATA=(SID=ORCL)))"
       }
     )
@@ -38,12 +38,14 @@ async function parseDataFromQuery(query) {
     for (let entry = 0; entry < rowCount; entry++) {
         let X = [];
         let Y = [];
+        let Name = [];
         let rows = output['rows'][entry];
         for (let i = 0; i < output['metaData'].length; i = i + 3) {
             Y.push(rows[i + 1]);
             X.push(rows[i + 2]);
+            Name.push(rows[i + 0]);
         }
-        data.push([X, Y]);
+        data.push([X, Y, Name]);
     }
     
     return {
@@ -1330,6 +1332,7 @@ app.get('/query_3_data', function (req, res) {
     }
 
     else {
+        console.log("called")
         parseDataFromQuery(generateQuery3(req.query.sex, req.query.descent, req.query.ageStart, req.query.ageEnd)).then((output) => {
             res.end(JSON.stringify(output))        
         })
