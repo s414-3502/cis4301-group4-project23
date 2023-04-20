@@ -88,7 +88,7 @@ function Template() {
   const { isLoading, error, data } = useQuery(["query3Data", graphParams.sex, graphParams.descent, graphParams.ageStart, graphParams.ageEnd], fetchQuery3Data);
 
   useEffect(() => {
-    if (data !== undefined) {
+    if (data !== undefined && data['Data'] !== undefined) {
       setDataLoading(false);
       setGraphData(data['Data']);
     }
@@ -125,19 +125,22 @@ function Template() {
 
   function scatterName(){
     let crimeGroup = []
-    data["Data"].forEach(element => {
-      console.log(element[2][0])
-      crimeGroup.push(element[2][0])
-      
-    });
-    let outVal = crimeGroup[dataIndex];
-    if(dataIndex < 5){
-      dataIndex += 1;
+    if (data !== undefined && data['Data'] !== undefined){
+      data["Data"].forEach(element => {
+        console.log(element[2][0])
+        crimeGroup.push(element[2][0])
+        
+      });
+      let outVal = crimeGroup[dataIndex];
+      if(dataIndex < 5){
+        dataIndex += 1;
+      }
+      else{
+        dataIndex = 0;
+      }
+      return outVal;
     }
-    else{
-      dataIndex = 0;
-    }
-    return outVal;
+    return ""
   }
 
   return (
