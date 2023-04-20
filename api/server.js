@@ -1550,6 +1550,9 @@ function generateQuery1(covidStatus, season, crimeGroups) {
     return query_1
 }
 
+
+
+
 function getPremisesFilter(val){
     if(val == 1){
         return "\'ALLEY\'";
