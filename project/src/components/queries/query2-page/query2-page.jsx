@@ -108,7 +108,7 @@ function Template() {
   function scatterName(){
     let vehicleCrime = graphParams.vehicleCrimeTypes.split('#');
     let outVal = vehicleCrime[dataIndex];
-    if(dataIndex < 3){
+    if(dataIndex < 5){
       dataIndex += 1;
     }
     else{
